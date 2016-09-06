@@ -1,0 +1,39 @@
+papers:
+	- tracking climate change opinions from twitter data (northeastern university)
+		- subjective vs. objective tweets classification (preprocess?)
+		- naive-bayes vs. SVM
+		- nb produced slightly higher results (~76% vs. 75%)
+	- signals of doubt: text mining climate skepticism (Boussalis)
+		- LDA: latent dirichlet allocation
+			- break into topics
+			- topics contain certain words	
+	- climate change sentiment on twitter: an unsolicited public opinion poll (cody, university of vermont)
+		- hedonometer: measures "happiness" of a users tweet based on word indexing
+		- studies of hashtags and how much each word in the dictionary correlates to the happiness score
+		- word shift graphs
+	- mining and summarizing customer reviews (minqing hu, university of illinois at chicago)
+		- interesting flowchart of sentiment analysis in text
+	- understanding climate change tweets: an open source toolkit for social media analysis (maynard, university of sheffield)
+		- named entity recognition
+			- identify which words are named entities
+			- classify named entities
+
+Vince's co-op report:
+	- from the discussions section, it seems as though the classifier was alright (although i never was able to get 80-85%.. maybe i'm using an outdated version of the code)
+	- seems as though creating and analyzing graphs and data from the classifier will be a big part of the work this term
+
+Vince's code:
+	- test.py seems to contain most of the code, and runs the training set and validates with the test set with a 64% accuracy when i ran it
+		- this is similar to NE uni paper, but appears as though the dataset was not quite as "good"
+	- a number of graphing functions
+	- lots of data
+	- from a lot of the programs, it seems as though i don't have some of the datasets that he was using.. perhaps he modified them or changed them to be better
+
+it seems like an important part of the papers is related to preprocessing the tweets
+	- because tweets are quite contextual and ambiguous, finding good data is probably quite difficult
+
+possible areas of interest:
+	- using classification algorithms to analyze impact of climate change events on twitter users' sentiments
+	- choice of classification techniques, algorithms
+	- preprocessing and choosing good data to learn from and use
+		- improving training set and learn how to better set up filters for future tweets
