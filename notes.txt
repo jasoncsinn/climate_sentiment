@@ -37,3 +37,32 @@ possible areas of interest:
 	- choice of classification techniques, algorithms
 	- preprocessing and choosing good data to learn from and use
 		- improving training set and learn how to better set up filters for future tweets
+
+========================================================================================
+
+possible major events to cover:
+	- Brexit - train and test on april/may tweets, run on june tweets, compare before and after brexit 
+	- climate change conferences?
+	- hurricanes, earthquakes, other natural disasters
+	- new papers being published
+
+alternatively, run on many tweets, graph them, then figure out where spikes in tweets occur and figure out what happened on those days to cause it.
+
+political situations vs. natural disasters vs. conferences? 
+want to determine the different impacts that all 3 have.. but it seems as though naturally, activists usually wouldn't convert to being skepticals whereas skepticals might convert to being neutral or being activists.
+
+one difficulty of conversion is that climate change tweet data is already quite sparse - it is highly likely that only a small subset of users tweet about climate change consistently, and it is unlikely that those that tweet about climate change consistently are skepticals (much more likely to be activists). this leads to heavy bias in data. perhaps we can use relative numbers but the sample size for skepticals will be significantly smaller i think?
+
+currently each individual word has its own "weighting" in the doc-term matrix. this might be problematic for now
+because our sample size is small and irrelevant words such as your, you, it, the, etc. may contribute to the prediction.
+this should decrease in effect after a large number of samples are taken.
+
+preprocessing would definitely help with this - however this would greatly complicate the classification process. 
+have to balance time spent on improving classification vs. time spent on analyzing the data (trade-off)
+
+however, one solution is just to have a lot of data. by adding more data, it will "regulate" the common words that do not pertain to an activist/skeptical point of view and they will have very small weighting.
+
+began labelling process today - realized even labelling manually can be difficult at times.. without context, it is hard to infer meaning into a lot of tweets and use of sarcasm is also difficult for even humans to detect without context.
+
+========================================================================================
+
