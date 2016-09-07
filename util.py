@@ -1,6 +1,10 @@
-def load_lines_from_file(filename, max_lines=-1):
+def load_lines_from_file(filename, max_lines=-1, start_line=1):
 	f = open(filename, 'r')
 	ret = []
+	j = 1
+	while j < start_line:
+		f.readline()
+		j += 1
 	if max_lines == -1:
 		for line in f:
 			ret.append(line.strip())

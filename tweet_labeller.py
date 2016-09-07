@@ -33,8 +33,8 @@ def load_tweet(input_string):
 
 # Helper Function
 def label_tweet(t):
-	print("Tweet Contents: " + t.text)
-	label_input = raw_input("Choose (a)ctivist, (s)keptical, (n)eutral, i(r)relevant, or e(x)it: ")
+	print("Tweet: " + t.text)
+	label_input = raw_input("Choose (a)ctivist, (s)keptical, (n)eutral, (u)nusable, or e(x)it: ")
 	if label_input == "a" or label_input == "activist":
 		t.label = "activist"
 	elif label_input == "s" or label_input == "skeptical":
@@ -44,7 +44,7 @@ def label_tweet(t):
 	elif label_input == "x" or label_input == "exit":
 		return False
 	else:
-		t.label = "irrelevant"
+		t.label = "unusable"
 	return True
 
 def label_and_save_tweets(t_list, filename):
@@ -52,13 +52,31 @@ def label_and_save_tweets(t_list, filename):
 	while (i < len(t_list) and label_tweet(t_list[i])):
 		i += 1
 	t_list = t_list[0:i]
-	to_write = [t.label + ' ::---:: ' + t.text for t in t_list]
-	f = open(filename, 'w')
+	to_write = [t.label + ' ::---:: ' + t.text for t in t_list if t.label != "unusable"]
+	f = open(filename, 'a')
 	f.write("\n".join(to_write))
 	f.close()	
 	print("Saved.")
 
-tweets = load_lines_from_file('data/full_tweet_data/climate_2016_05_06.txt', 10)
+# Include list is conjunctive, exclude list is disjunctive. 
+# the tweet must:
+#	- contain all elements in include list 
+#	- contain no elements in exclude list
+def filter_tweets(t_list, include_list = [], exclude_list = []):
+	new_t_list = []
+	for t in t_list:
+		filter_success = True
+		for inc in include_list:
+			if t.find(inc) == -1:
+				filter_success = False
+		for exc in exclude_list:
+			if t.find(exc) != -1:
+				filter_success = False
+		if filter_success:
+			new_t_list.append(t)
+	return new_t_list
+
+tweets = load_lines_from_file('data/full_tweet_data/climate_2016_05_06.txt', 10, 5)
 t_list = [load_tweet(t_string) for t_string in tweets]
 label_and_save_tweets(t_list, 'data/test_labelling.txt')
 split_labelled_data('data/test_labelling.txt', 'data/test_labelling_x.txt', 'data/test_labelling_y.txt')
