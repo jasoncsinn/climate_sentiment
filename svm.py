@@ -8,15 +8,8 @@ from sklearn.svm import LinearSVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer
 
+from util import load_lines_from_file
 import pdb
-
-def load_lines_from_file(filename):
-	f = open(filename, 'r')
-	ret = []
-	for line in f:
-		ret.append(line)
-	f.close()
-	return ret
 
 LOC_TRAIN_X = 'data/train_x.txt'
 LOC_TRAIN_Y = 'data/train_y.txt'

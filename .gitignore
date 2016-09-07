@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Ignore full tweet data
+data/full_tweet_data/
+
+# Ignore modifications to Vince Talbot' code from last term.
+Vince_Talbot_Code_Training_Set/
