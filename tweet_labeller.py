@@ -54,7 +54,7 @@ def label_and_save_tweets(t_list, filename):
 	t_list = t_list[0:i]
 	to_write = [t.label + ' ::---:: ' + t.text for t in t_list if t.label != "unusable"]
 	f = open(filename, 'a')
-	f.write("\n".join(to_write))
+	f.write("\n".join(to_write)+ "\n")
 	f.close()	
 	print("Saved.")
 
@@ -76,8 +76,8 @@ def filter_tweets(t_list, include_list = [], exclude_list = []):
 			new_t_list.append(t)
 	return new_t_list
 
-tweets = load_lines_from_file('data/full_tweet_data/climate_2016_05_06.txt', 10, 5)
+tweets = load_lines_from_file('data/full_tweet_data/climate_2016_05_06.txt', 250, 4000)
 t_list = [load_tweet(t_string) for t_string in tweets]
-label_and_save_tweets(t_list, 'data/test_labelling.txt')
-split_labelled_data('data/test_labelling.txt', 'data/test_labelling_x.txt', 'data/test_labelling_y.txt')
+label_and_save_tweets(t_list, 'data/label_05_06.txt')
+split_labelled_data('data/label_05_06.txt', 'data/label_05_06_x.txt', 'data/label_05_06_y.txt')
 

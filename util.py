@@ -42,3 +42,12 @@ def split_labelled_data(filename, filename_X, filename_Y):
 	f_Y.write("\n".join(Y))
 	f_Y.close()
 	return (X,Y)
+
+def save_incorrect_tweets(filename, test_X, test_Y, prediction):
+	incorrect = []
+	for i in range(len(test_X)):
+		if prediction[i] != test_Y[i]:
+			incorrect.append(test_Y[i] + " ::---:: " + prediction[i] + "::---:: " + test_X[i])
+	f = open(filename, 'w')
+	f.write("\n".join(incorrect))
+	f.close()
