@@ -4,7 +4,7 @@ import sys
 import pickle
 import time
 
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -33,13 +33,13 @@ test_Y = load_lines_from_file(LOC_TEST_Y)
 cv = CountVectorizer()
 cv = cv.fit(train_X)
 train_dtmatrix = cv.transform(train_X)
-feature_list = cv.get_feature_names()
-feature_writer = open(LOC_FEATURE_LIST, 'w')
-feature_writer.write("\n".join(feature_list))
-feature_writer.close()
+#feature_list = cv.get_feature_names()
+#feature_writer = open(LOC_FEATURE_LIST, 'w')
+#feature_writer.write("\n".join(feature_list))
+#feature_writer.close()
 
 # Train
-clf = SVC(kernel='linear')
+clf = LinearSVC()
 params_space = { 'C': np.logspace(-5, 0, 10), 'class_weight':[None,'balanced']}
 gscv = GridSearchCV(clf, params_space, cv=2)
 gscv.fit(train_dtmatrix, train_Y)
@@ -51,6 +51,9 @@ test_dtmatrix = cv.transform(test_X)
 prediction = gscv.predict(test_dtmatrix)
 
 #save_incorrect_tweets('data/incorrect_tweets_original.txt', test_X, test_Y, prediction)
+print(" ".join(prediction))
+print("\n")
+print(" ".join(test_Y))
 num_correct = len([i for i, j in zip(prediction, test_Y) if i == j])
 print('Num correct: ' + str(num_correct))
 print('# of Test Cases: ' + str(len(prediction)))
