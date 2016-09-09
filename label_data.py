@@ -9,10 +9,10 @@ DB_LOC = 'data/labelled_data.db'
 def parse_tweet(tweet_str):
 	tweet_str = tweet_str.strip().strip("{").strip("}")
 	components = tweet_str.split(":::")
-	date = components[0].split(':')[1].strip().strip("\"")
+	date = components[0].split(':',1)[1].strip().strip("\"")
 	text = components[1].split(':',1)[1].strip().strip("\"").replace("\'", "")
 	username = components[3].split(',',1)[0].split(':',1)[1].strip().strip("\"")
-	location = components[3].split(',',1)[1].split(':',1)[1].strip().strip("\"")
+	location = components[3].split(',',1)[1].split(':',1)[1].strip().strip("\"").replace("\'","")
 	return (date, text, username, location)
 
 
@@ -24,17 +24,22 @@ tweets = util.load_lines_from_file(DATA_LOC, num_tweets, tweet_num)
 for tweet_str in tweets:
 	date, text, username, location = parse_tweet(tweet_str)
 	print(date + " - " + username + ": " + text)
-	useful = raw_input("Is this tweet useful? (y/n): ")
+	useful = raw_input("Include tweet? (y/n): ")
 	if useful == "y":
-		subjective = raw_input("Is this tweet subjective? (y/n): ")
+		usable = raw_input("Is this tweet usable? (y/n): ")
+		final_label = 'unusable'
 		sentiment = 'n'
-		if subjective == "y":
+		if usable == "y":
 			sentiment = raw_input("What is the sentiment of this tweet? (a/s): ")
-		to_execute = "INSERT INTO tweets VALUES (\'" + text + "\',\'" + date + "\',\'" + username + "\',\'" + location + "\',\'" + subjective + "\',\'" + sentiment + "\')"
-		print(to_execute)
+			if sentiment == "a":
+				final_label = 'activist'
+			else:
+				final_label = 'skeptical'
+		to_execute = "INSERT INTO tweets VALUES (\'" + text + "\',\'" + date + "\',\'" + username + "\',\'" + location + "\',\'" 
+		to_execute += usable + "\',\'" + sentiment + "\',\'" + final_label + "\')"
+		#print(to_execute)
 		c.execute(to_execute)
+		conn.commit()
 		print("Saved to database.")
-conn.commit()
-print("Commited to database. Closing connection.")
 conn.close()
 print("Connection closed. Exiting.")
