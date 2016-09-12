@@ -2,13 +2,12 @@ import numpy as np
 import sqlite3
 from random import shuffle
 
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC,SVC
 from sklearn.feature_extraction.text import CountVectorizer
 
 import pdb
 
 LOC_DB = 'data/labelled_data.db'
-
 
 labelled_text = []
 labelled_usable = []
@@ -18,7 +17,7 @@ labelled_final = []
 # Setup database connection and load data
 conn = sqlite3.connect(LOC_DB)
 c = conn.cursor()
-c.execute("SELECT * FROM merged_tweets")
+c.execute("SELECT * FROM tweets")
 tweets = c.fetchall()
 shuffle(tweets)
 for row in tweets:
@@ -32,7 +31,7 @@ conn.close()
 
 
 # Partition into training vs. test data
-split_index = 1625
+split_index = 425
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -46,7 +45,7 @@ usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
 
 # Train usable classifier
-usable_clf = LinearSVC(C=0.1)
+usable_clf = SVC(C=0.1,kernel='linear')
 usable_clf.fit(usable_train_dtmatrix, train_usable_Y)
 
 # Test usable classifier
@@ -73,8 +72,8 @@ j = 0
 for i in sentiment_indices:
 	prediction[i] = sentiment_prediction[j]
 	j += 1
-#for i,j in zip(prediction,test_Y):
-#	print(i + ' ' + j)
+for i,j in zip(prediction,test_Y):
+	print(i + ' ' + j)
 #print(len([i for i in test_Y if i == 's']))
 num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
