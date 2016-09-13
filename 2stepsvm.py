@@ -25,13 +25,29 @@ for row in tweets:
 	labelled_usable.append(row[4])
 	labelled_sentiment.append(row[5])
 	labelled_final.append(row[6])
+#c.execute("SELECT * FROM vince_refined_tweets")
+#tweets = c.fetchall()
+#shuffle(tweets)
+#for row in tweets:
+#	labelled_text.append(row[0])
+#	labelled_usable.append(row[4])
+#	labelled_sentiment.append(row[5])
+#	labelled_final.append(row[6])
+#c.execute("SELECT * FROM tweets")
+#tweets = c.fetchall()
+#shuffle(tweets)
+#for row in tweets:
+#	labelled_text.append(row[0])
+#	labelled_usable.append(row[4])
+#	labelled_sentiment.append(row[5])
+#	labelled_final.append(row[6])
 conn.close()
 
 #print(" ".join(labelled_sentiment))
 
 
 # Partition into training vs. test data
-split_index = 425
+split_index = 500
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']

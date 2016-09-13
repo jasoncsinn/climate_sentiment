@@ -4,8 +4,8 @@ import sqlite3
 conn = sqlite3.connect('data/labelled_data.db')
 c = conn.cursor()
 
-train_X = load_lines_from_file('data/train_x.txt')
-train_Y = load_lines_from_file('data/train_y.txt')
+train_X = load_lines_from_file('data/train_tweets.txt')
+train_Y = load_lines_from_file('data/train_sentiments.txt')
 
 for text,label in zip(train_X,train_Y):
 	text = text.replace("\'","")
@@ -20,7 +20,7 @@ for text,label in zip(train_X,train_Y):
 		usable = 'y'
 		sentiment = 'a'
 		final_label = 'activist'
-	to_execute = "INSERT INTO vince_tweets VALUES (\'" + text + "\',\'\',\'\',\'\',\'"
+	to_execute = "INSERT INTO vince_refined_tweets VALUES (\'" + text + "\',\'\',\'\',\'\',\'"
 	to_execute += usable + "\',\'" + sentiment + "\',\'" + final_label + "\')"
 	print(to_execute)
 	c.execute(to_execute)
