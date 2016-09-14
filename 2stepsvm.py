@@ -3,7 +3,10 @@ import sqlite3
 from random import shuffle
 
 from sklearn.svm import LinearSVC,SVC
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2,f_classif
 
 import pdb
 
@@ -47,7 +50,7 @@ conn.close()
 
 
 # Partition into training vs. test data
-split_index = 500
+split_index = 900
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -59,15 +62,24 @@ test_Y = labelled_sentiment[split_index:]
 usable_cv = CountVectorizer()
 usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
+sel = SelectKBest(chi2,k=50)
+usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
+feature_list = usable_cv.get_feature_names()
+feature_map = sel.get_support()
+features = [i for i,j in zip(feature_list, feature_map) if j == True]
+print("Features: " + " ".join(features))
+#pdb.set_trace()
 
 # Train usable classifier
-usable_clf = SVC(C=0.1,kernel='linear')
-usable_clf.fit(usable_train_dtmatrix, train_usable_Y)
+#usable_clf = SVC(C=0.1,kernel='linear')
+usable_clf = BernoulliNB()
+usable_clf.fit(usable_train_dtmatrix.toarray(), train_usable_Y)
 
 # Test usable classifier
 usable_test_Y = labelled_usable[split_index:]
 usable_test_dtmatrix = usable_cv.transform(test_X)
-usable_clf_acc = 100.0*usable_clf.score(usable_test_dtmatrix, usable_test_Y)
+usable_test_dtmatrix = sel.transform(usable_test_dtmatrix)
+usable_clf_acc = 100.0*usable_clf.score(usable_test_dtmatrix.toarray(), usable_test_Y)
 
 # Extract features for sentiment classifier
 sentiment_cv = CountVectorizer()
@@ -80,7 +92,8 @@ sentiment_clf.fit(sentiment_train_dtmatrix, train_sentiment_Y)
 
 # Test Overall
 usable_test_dtmatrix = usable_cv.transform(test_X)
-prediction = usable_clf.predict(usable_test_dtmatrix)
+usable_test_dtmatrix = sel.transform(usable_test_dtmatrix)
+prediction = usable_clf.predict(usable_test_dtmatrix.toarray())
 sentiment_test_dtmatrix = sentiment_cv.transform([i for i,j in zip(test_X, prediction) if j == 'y'])
 sentiment_prediction = sentiment_clf.predict(sentiment_test_dtmatrix)
 sentiment_indices = [i for i in range(len(prediction)) if prediction[i] == 'y']
@@ -88,8 +101,8 @@ j = 0
 for i in sentiment_indices:
 	prediction[i] = sentiment_prediction[j]
 	j += 1
-for i,j in zip(prediction,test_Y):
-	print(i + ' ' + j)
+#for i,j in zip(prediction,test_Y):
+#	print(i + ' ' + j)
 #print(len([i for i in test_Y if i == 's']))
 num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
