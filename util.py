@@ -18,6 +18,15 @@ def load_lines_from_file(filename, max_lines=-1, start_line=1):
 	f.close()
 	return ret
 
+def parse_tweet(tweet_str):
+	tweet_str = tweet_str.strip().strip("{").strip("}")
+	components = tweet_str.split(":::")
+	date = components[0].split(':',1)[1].strip().strip("\"")
+	text = components[1].split(':',1)[1].strip().strip("\"").replace("\'","")
+	username = components[3].split(',',1)[0].split(':',1)[1].strip().strip("\"")
+	location = components[3].split(',',1)[1].split(':',1)[1].strip().strip("\"").replace("\'","")
+	return (date, text, username, location)
+
 def merge_labelled_data(filename_X, filename_Y):
 	lines_X = load_lines_from_file(filename_X)
 	lines_Y = load_lines_from_file(filename_Y)

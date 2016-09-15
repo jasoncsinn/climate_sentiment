@@ -8,9 +8,14 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2,f_classif
 
+from util import load_lines_from_file,parse_tweet
+
 import pdb
 
-LOC_DB = 'data/labelled_data.db'
+LOC_TRAIN_DB = 'data/labelled_data.db'
+LOC_PRED_DB = 'data/predicted_data.db'
+PREDICT = True
+PREDICT_FILENAME = 'data/full_tweet_data/climate_2016_07_01.txt'
 
 labelled_text = []
 labelled_usable = []
@@ -18,7 +23,7 @@ labelled_sentiment = []
 labelled_final = []
 
 # Setup database connection and load data
-conn = sqlite3.connect(LOC_DB)
+conn = sqlite3.connect(LOC_TRAIN_DB)
 c = conn.cursor()
 c.execute("SELECT * FROM tweets")
 tweets = c.fetchall()
@@ -67,7 +72,7 @@ usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
 feature_list = usable_cv.get_feature_names()
 feature_map = sel.get_support()
 features = [i for i,j in zip(feature_list, feature_map) if j == True]
-print("Features: " + " ".join(features))
+print("Features: ", features)
 #pdb.set_trace()
 
 # Train usable classifier
@@ -112,3 +117,40 @@ print('Sentiment Classifier Accuracy: ' + str(sentiment_clf_acc) + '%')
 print('Overall Accuracy: ' + str(overall_acc) + '%')
 #pdb.set_trace()
 
+# Predict
+cur_line = 56001
+batch_size = 1000
+while(PREDICT and cur_line < 100000):
+	tweets = load_lines_from_file(PREDICT_FILENAME, batch_size, cur_line)
+	dates = []
+	texts = []
+	usernames = []
+	locations = []
+	for tweet_str in tweets:
+		date, text, username, location = parse_tweet(tweet_str)
+		dates.append(date)
+		texts.append(text)
+		usernames.append(username)
+		locations.append(location)
+		#print(date + " - " + username + ": " + text)
+	#pdb.set_trace()
+	predict_dtmatrix = usable_cv.transform(texts)
+	predict_dtmatrix = sel.transform(predict_dtmatrix)
+	prediction = usable_clf.predict(predict_dtmatrix.toarray())
+	sentiment_predict_dtmatrix = sentiment_cv.transform([i for i,j in zip(texts, prediction) if j == 'y'])
+	sentiment_prediction = sentiment_clf.predict(sentiment_predict_dtmatrix)
+	sentiment_indices = [i for i in range(len(prediction)) if prediction[i] == 'y']
+	j = 0
+	for i in sentiment_indices:
+		prediction[i] = sentiment_prediction[j]
+		j += 1
+	pred_conn = sqlite3.connect(LOC_PRED_DB)
+	pred_c = pred_conn.cursor()
+	for i in range(len(tweets)):
+		to_execute = "INSERT INTO climate_2016_07_01 VALUES (\'" + texts[i] + "\',\'" + dates[i] + "\',\'" + usernames[i] + "\',\'" + locations[i] + "\',\'" + prediction[i] + "\')"
+		pred_c.execute(to_execute)
+	pred_conn.commit()
+	print("Commited from cur line: " + str(cur_line))
+	pred_conn.close()
+	print("Connection closed. Exiting.")
+	cur_line += 1000
