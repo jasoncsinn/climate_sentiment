@@ -1,0 +1,50 @@
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act as be by challenges change climate climatechange co do effects exxon facts factual fighting forces gt hannahmejdrich happening hoax https humans ignoring impacts is islands its may natural north real red rising science scientists sea sensanders shot something spike stop temperatures thing to trump u2019re ud83d want wildfires york
+Usable Classifier Accuracy: 69.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 67.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency as by californias change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual five focus hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers level may on powerful real rising say science scientists sea shot should shows something stop such thing to trump ud83d york
+Usable Classifier Accuracy: 67.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 65.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: affected agency as be by californias challenges change climate co communities cvjxc8gjvo disadvantaged do exxon facts factual focus gt hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers may natural on powerful real rising say science scientists sea sensanders shot should shows something stop thing to trump ud83d
+Usable Classifier Accuracy: 68.0%
+Sentiment Classifier Accuracy: 94.0%
+Overall Accuracy: 64.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency almost as be believe bentler by californias challenges change clear climate climatechange co communities cvjxc8gjvo disadvantaged exxon five focus gt he hoax https humans impacts is islands lawmakers made may natural obama on pacific powerful real rising say science scientists sea shot should shows to trump ud83d york
+Usable Classifier Accuracy: 72.0%
+Sentiment Classifier Accuracy: 94.0%
+Overall Accuracy: 68.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency as be by californias challenges change climate co communities cvjxc8gjvo disadvantaged do exxon facts factual five focus gt hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers may natural obama on powerful real rising say science scientists sea shot should something stop thing to trump ud83d
+Usable Classifier Accuracy: 62.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 60.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency almost as be by californias century change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual focus forces hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers may on powerful real rising say science scientists sea shot should something stop thing to trump ud83d york
+Usable Classifier Accuracy: 59.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 57.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency almost be berniesanders by californias change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual five focus gt hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers may natural on powerful real rising say science scientists sea shot should something stop thing to trump ud83d
+Usable Classifier Accuracy: 63.0%
+Sentiment Classifier Accuracy: 90.0%
+Overall Accuracy: 57.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency as be by californias change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual focus forces gt hannahmejdrich happening hoax https humans ignoring impacts is islands its lawmakers made may natural on powerful real rising say science scientists sea shot should something stop thing to trump york
+Usable Classifier Accuracy: 67.0%
+Sentiment Classifier Accuracy: 94.0%
+Overall Accuracy: 63.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency as be by californias change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual five focus food hannahmejdrich happening he hoax https ignoring impacts is islands its lawmakers may on powerful real rising say science scientists sea shot should shows something stop such thing trump ud83d york
+Usable Classifier Accuracy: 67.0%
+Sentiment Classifier Accuracy: 94.0%
+Overall Accuracy: 63.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Features: act agency as by californias change climate climatechange co communities cvjxc8gjvo disadvantaged do exxon facts factual focus forces gt hannahmejdrich happening hoax https ignoring impacts is islands its lawmakers made may natural on powerful real rising say science scientists sea shot should something stop thing to trees trump ud83d york
+Usable Classifier Accuracy: 61.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 59.0%

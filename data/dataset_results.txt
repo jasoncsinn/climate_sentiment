@@ -1,0 +1,42 @@
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 73.0%
+Sentiment Classifier Accuracy: 96.0%
+Overall Accuracy: 70.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 66.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 64.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 67.0%
+Sentiment Classifier Accuracy: 94.0%
+Overall Accuracy: 63.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 75.0%
+Sentiment Classifier Accuracy: 99.0%
+Overall Accuracy: 74.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 62.0%
+Sentiment Classifier Accuracy: 98.0%
+Overall Accuracy: 61.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 73.0%
+Sentiment Classifier Accuracy: 97.0%
+Overall Accuracy: 71.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 74.0%
+Sentiment Classifier Accuracy: 96.0%
+Overall Accuracy: 71.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 64.0%
+Sentiment Classifier Accuracy: 95.0%
+Overall Accuracy: 61.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 66.0%
+Sentiment Classifier Accuracy: 98.0%
+Overall Accuracy: 65.0%
+(scikit-learn) jsinn@ubuntu:~/git/climate_sentiment$ python 2stepsvm.py
+Usable Classifier Accuracy: 74.0%
+Sentiment Classifier Accuracy: 95.0%
+Overall Accuracy: 70.0%
+
+

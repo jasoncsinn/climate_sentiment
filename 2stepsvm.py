@@ -15,7 +15,8 @@ import pdb
 LOC_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
 PREDICT = True
-PREDICT_FILENAME = 'data/full_tweet_data/climate_2016_07_01.txt'
+PREDICT_TABLENAME = 'climate_2016_08_19'
+PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
 labelled_text = []
 labelled_usable = []
@@ -117,21 +118,30 @@ print('Sentiment Classifier Accuracy: ' + str(sentiment_clf_acc) + '%')
 print('Overall Accuracy: ' + str(overall_acc) + '%')
 #pdb.set_trace()
 
+blacklist = ["#BustTheMyth :::", "Ricardo_AEA", "rainnwilson", "JettaH", "Crazy Bernie was the guy that claimed ISIS", "3803497941", "292785272", "BadManWizz", "1537476354", "726724131627122688", "Environment website::: Ricardo expert invited to Intergovernmental Panel", ":::FACE PALM::: x infinity!","25769092","166384151", "prassdfrimal","1495729418", "Are you f:::king kidding me.","3225213307", "jjasminnie","2371258508"]
+def check_blacklist(tweet_str):
+	for name in blacklist:
+		if name in tweet_str:
+			return False
+	return True
+
 # Predict
-cur_line = 56001
+cur_line = 59001
 batch_size = 1000
-while(PREDICT and cur_line < 100000):
+while(PREDICT and cur_line < 1000000):
 	tweets = load_lines_from_file(PREDICT_FILENAME, batch_size, cur_line)
 	dates = []
 	texts = []
 	usernames = []
 	locations = []
 	for tweet_str in tweets:
-		date, text, username, location = parse_tweet(tweet_str)
-		dates.append(date)
-		texts.append(text)
-		usernames.append(username)
-		locations.append(location)
+		print(tweet_str)
+		if check_blacklist(tweet_str):
+			date, text, username, location = parse_tweet(tweet_str)
+			dates.append(date)
+			texts.append(text)
+			usernames.append(username)
+			locations.append(location)
 		#print(date + " - " + username + ": " + text)
 	#pdb.set_trace()
 	predict_dtmatrix = usable_cv.transform(texts)
@@ -146,8 +156,8 @@ while(PREDICT and cur_line < 100000):
 		j += 1
 	pred_conn = sqlite3.connect(LOC_PRED_DB)
 	pred_c = pred_conn.cursor()
-	for i in range(len(tweets)):
-		to_execute = "INSERT INTO climate_2016_07_01 VALUES (\'" + texts[i] + "\',\'" + dates[i] + "\',\'" + usernames[i] + "\',\'" + locations[i] + "\',\'" + prediction[i] + "\')"
+	for i in range(len(texts)):
+		to_execute = "INSERT INTO " + PREDICT_TABLENAME + " VALUES (\'" + texts[i] + "\',\'" + dates[i] + "\',\'" + usernames[i] + "\',\'" + locations[i] + "\',\'" + prediction[i] + "\')"
 		pred_c.execute(to_execute)
 	pred_conn.commit()
 	print("Commited from cur line: " + str(cur_line))

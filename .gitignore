@@ -93,3 +93,6 @@ data/full_tweet_data/
 
 # Ignore modifications to Vince Talbot' code from last term.
 Vince_Talbot_Code_Training_Set/
+
+# Ignore predicted data database (upload to another source)
+data/predicted_data.db
