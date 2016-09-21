@@ -14,7 +14,7 @@ import pdb
 
 LOC_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
-PREDICT = True
+PREDICT = False
 PREDICT_TABLENAME = 'climate_2016_08_19'
 PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
@@ -86,6 +86,14 @@ usable_test_Y = labelled_usable[split_index:]
 usable_test_dtmatrix = usable_cv.transform(test_X)
 usable_test_dtmatrix = sel.transform(usable_test_dtmatrix)
 usable_clf_acc = 100.0*usable_clf.score(usable_test_dtmatrix.toarray(), usable_test_Y)
+results = usable_clf.predict(usable_test_dtmatrix.toarray())
+false_positives = [predict for predict,real in zip(results,usable_test_Y) if predict == 'y' and real == 'n']
+false_negatives = [predict for predict,real in zip(results,usable_test_Y) if predict == 'n' and real == 'y']
+#print(" ".join(false_positives))
+#print(" ".join(false_negatives))
+#print(len(usable_test_Y))
+relevant_usable_clf_acc = (100.0*(len(usable_test_Y) - len(false_positives)))/len(usable_test_Y)
+#pdb.set_trace()
 
 # Extract features for sentiment classifier
 sentiment_cv = CountVectorizer()
@@ -114,8 +122,10 @@ num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
 sentiment_clf_acc = round(100.0*overall_acc / usable_clf_acc)
 print('Usable Classifier Accuracy: ' + str(usable_clf_acc) + '%')
+print('Relevant Usable Classifier Accuracy: ' + str(relevant_usable_clf_acc) + '%')
 print('Sentiment Classifier Accuracy: ' + str(sentiment_clf_acc) + '%')
 print('Overall Accuracy: ' + str(overall_acc) + '%')
+print('Relevant Accuracy: ' + str(relevant_usable_clf_acc * sentiment_clf_acc / 100.0) + '%')
 #pdb.set_trace()
 
 blacklist = ["#BustTheMyth :::", "Ricardo_AEA", "rainnwilson", "JettaH", "Crazy Bernie was the guy that claimed ISIS", "3803497941", "292785272", "BadManWizz", "1537476354", "726724131627122688", "Environment website::: Ricardo expert invited to Intergovernmental Panel", ":::FACE PALM::: x infinity!","25769092","166384151", "prassdfrimal","1495729418", "Are you f:::king kidding me.","3225213307", "jjasminnie","2371258508"]
