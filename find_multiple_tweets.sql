@@ -7,7 +7,9 @@ HAVING ( COUNT (username) > 1)*/
 (SELECT username FROM full_sentiments GROUP BY username HAVING (COUNT(username) > 1))
 ORDER BY username,date,sentiment*/
 
-SELECT * FROM climate_2016_07_29 WHERE sentiment='s'
+--SELECT * FROM climate_2016_07_29 WHERE sentiment='s'
+
+SELECT text,username FROM full_sentiments WHERE NOT text LIKE 'RT %'
 
 --SELECT username FROM sentiments GROUP BY username HAVING (COUNT(username) > 1)
 

@@ -29,7 +29,7 @@ delta = datetime.timedelta(1)
 date_mask = []
 #activist_tweets = []
 #skeptical_tweets = []
-f = open('analysis/daybyday_tweet_stats.txt', 'a')
+f = open('data/daybyday_tweet_stats.txt', 'a')
 
 while cur_date <= end_date:
 	date_mask.append(cur_date)

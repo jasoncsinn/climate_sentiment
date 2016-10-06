@@ -10,7 +10,7 @@ def extract_stats(line):
 	ske = int(ske)
 	return (date,act,ske)
 
-f = open('analysis/daybyday_tweet_stats_fixed.txt')
+f = open('data/daybyday_tweet_stats_fixed.txt')
 lines = f.readlines()
 f.close()
 
