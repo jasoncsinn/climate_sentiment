@@ -56,7 +56,7 @@ conn.close()
 
 
 # Partition into training vs. test data
-split_index = 900
+split_index = 1500
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -68,7 +68,7 @@ test_Y = labelled_sentiment[split_index:]
 usable_cv = CountVectorizer()
 usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
-sel = SelectKBest(chi2,k=50)
+sel = SelectKBest(chi2,k=100)
 usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
 feature_list = usable_cv.get_feature_names()
 feature_map = sel.get_support()
