@@ -1,7 +1,7 @@
 import datetime
 import pdb
 
-DATA_LOC = 'analysis/daybyday_tweet_stats.txt'
+DATA_LOC = 'data/daybyday_tweet_stats_2016.txt'
 
 def extract_stats(line):
 	date,act,ske = line.split(" ",2)
@@ -14,7 +14,7 @@ f = open(DATA_LOC, 'r')
 lines = f.readlines()
 f.close()
 
-f = open('analysis/daybyday_tweet_stats_fixed.txt', 'w')
+f = open('data/daybyday_tweet_stats_2016_fixed.txt', 'w')
 
 cur_index = 1
 prev_index = 0

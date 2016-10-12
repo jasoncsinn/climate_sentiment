@@ -14,8 +14,8 @@ import pdb
 
 LOC_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
-PREDICT = False
-PREDICT_TABLENAME = 'climate_2016_08_19'
+PREDICT = True
+PREDICT_TABLENAME = 'climate_2016_04_29'
 PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
 labelled_text = []
@@ -56,7 +56,7 @@ conn.close()
 
 
 # Partition into training vs. test data
-split_index = 1500
+split_index = 2500
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -130,13 +130,17 @@ print('Relevant Accuracy: ' + str(relevant_usable_clf_acc * sentiment_clf_acc / 
 
 blacklist = ["#BustTheMyth :::", "Ricardo_AEA", "rainnwilson", "JettaH", "Crazy Bernie was the guy that claimed ISIS", "3803497941", "292785272", "BadManWizz", "1537476354", "726724131627122688", "Environment website::: Ricardo expert invited to Intergovernmental Panel", ":::FACE PALM::: x infinity!","25769092","166384151", "prassdfrimal","1495729418", "Are you f:::king kidding me.","3225213307", "jjasminnie","2371258508"]
 def check_blacklist(tweet_str):
+	check_components = tweet_str.split(':::')
+#	pdb.set_trace()
+	if len(check_components) != 6:
+		return False
 	for name in blacklist:
 		if name in tweet_str:
 			return False
 	return True
 
 # Predict
-cur_line = 59001
+cur_line = 1
 batch_size = 1000
 while(PREDICT and cur_line < 1000000):
 	tweets = load_lines_from_file(PREDICT_FILENAME, batch_size, cur_line)
@@ -145,7 +149,7 @@ while(PREDICT and cur_line < 1000000):
 	usernames = []
 	locations = []
 	for tweet_str in tweets:
-		print(tweet_str)
+		#print(tweet_str)
 		if check_blacklist(tweet_str):
 			date, text, username, location = parse_tweet(tweet_str)
 			dates.append(date)

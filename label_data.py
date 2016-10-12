@@ -3,7 +3,7 @@ import util
 
 import pdb
 
-DATA_LOC = 'data/full_tweet_data/climate_2016_03_04.txt'
+DATA_LOC = 'data/full_tweet_data/climate_2016_04_22.txt'
 DB_LOC = 'data/labelled_data.db'
 
 conn = sqlite3.connect(DB_LOC)

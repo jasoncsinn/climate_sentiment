@@ -19,17 +19,17 @@ conn = sqlite3.connect(LOC_PRED_DB)
 c = conn.cursor()
 #c.execute("SELECT * FROM full_sentiments")
 #c.execute("SELECT * FROM full_sentiments WHERE username in (SELECT username FROM full_sentiments GROUP BY username HAVING (COUNT(username) > 1)) ORDER BY date")
-c.execute("SELECT * FROM climate_2016_08_19 WHERE NOT sentiment='n'")
+c.execute("SELECT * FROM climate_2016_04_29 WHERE NOT sentiment='n'")
 
 db_tweets = c.fetchall()
 dt_format = '%a %b %d %H:%M:%S +0000 %Y'
-cur_date = datetime.date(2016,8,12)
-end_date = datetime.date(2016,8,19)
+cur_date = datetime.date(2016,4,22)
+end_date = datetime.date(2016,4,29)
 delta = datetime.timedelta(1)
 date_mask = []
 #activist_tweets = []
 #skeptical_tweets = []
-f = open('data/daybyday_tweet_stats.txt', 'a')
+f = open('data/daybyday_tweet_stats_2016.txt', 'a')
 
 while cur_date <= end_date:
 	date_mask.append(cur_date)

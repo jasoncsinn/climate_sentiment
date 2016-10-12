@@ -7,8 +7,9 @@ HAVING ( COUNT (username) > 1)*/
 (SELECT username FROM full_sentiments GROUP BY username HAVING (COUNT(username) > 1))
 ORDER BY username,date,sentiment*/
 
-SELECT COUNT(*) FROM tweets
---SELECT COUNT(*) FROM tweets WHERE sentiment='s'
+--SELECT COUNT(*) FROM tweets
+--SELECT * FROM tweets order by date
+--SELECT * FROM tweets WHERE username='leafyflower1'
 
 --SELECT * FROM climate_2016_07_29 WHERE sentiment='s'
 
@@ -18,6 +19,8 @@ SELECT COUNT(*) FROM tweets
 
 --SELECT * FROM full_sentiments WHERE username = 'Col_Connaughton' order by date, sentiment
 
---INSERT INTO full_sentiments (text,date,username,location,sentiment)
---SELECT text,date,username,location,sentiment FROM climate_2016_08_19 WHERE sentiment='s'
 --SELECT COUNT(*) FROM full_sentiments
+
+--INSERT INTO full_sentiments (text,date,username,location,sentiment)
+--SELECT text,date,username,location,sentiment FROM climate_2016_04_29 WHERE not sentiment='n'
+SELECT COUNT(*) FROM full_sentiments

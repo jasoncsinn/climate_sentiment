@@ -10,7 +10,7 @@ def extract_stats(line):
 	ske = int(ske)
 	return (date,act,ske)
 
-f = open('data/daybyday_tweet_stats_fixed.txt')
+f = open('data/daybyday_tweet_stats_2016_fixed.txt')
 lines = f.readlines()
 f.close()
 
@@ -25,5 +25,5 @@ for line in lines:
 	skes.append(ske)
 
 fig, ax = plt.subplots()
-ax.plot_date(dates,skes,'-')
+ax.plot_date(dates,acts,'-')
 plt.show()
