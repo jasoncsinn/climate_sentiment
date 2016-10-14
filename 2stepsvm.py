@@ -12,9 +12,11 @@ from util import load_lines_from_file,parse_tweet
 
 import pdb
 
-LOC_TRAIN_DB = 'data/labelled_data.db'
+LOC_TRAIN_DB = 'data/training_data.db'
+LOC_OLD_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
-PREDICT = True
+PREDICT = False
+USE_OLD_DATA = False 
 PREDICT_TABLENAME = 'climate_2016_04_29'
 PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
@@ -34,29 +36,32 @@ for row in tweets:
 	labelled_usable.append(row[4])
 	labelled_sentiment.append(row[5])
 	labelled_final.append(row[6])
-#c.execute("SELECT * FROM vince_refined_tweets")
-#tweets = c.fetchall()
-#shuffle(tweets)
-#for row in tweets:
-#	labelled_text.append(row[0])
-#	labelled_usable.append(row[4])
-#	labelled_sentiment.append(row[5])
-#	labelled_final.append(row[6])
-#c.execute("SELECT * FROM tweets")
-#tweets = c.fetchall()
-#shuffle(tweets)
-#for row in tweets:
-#	labelled_text.append(row[0])
-#	labelled_usable.append(row[4])
-#	labelled_sentiment.append(row[5])
-#	labelled_final.append(row[6])
 conn.close()
-
-#print(" ".join(labelled_sentiment))
-
+if USE_OLD_DATA:
+	old_conn = sqlite3.connect(LOC_OLD_TRAIN_DB)
+	old_c = old_conn.cursor()
+	old_c.execute("SELECT * FROM vince_refined_tweets")
+	tweets = old_c.fetchall()
+	shuffle(tweets)
+	for row in tweets:
+		labelled_text.append(row[0])
+		labelled_usable.append(row[4])
+		labelled_sentiment.append(row[5])
+		labelled_final.append(row[6])
+	old_c.execute("SELECT * FROM tweets")
+	tweets = old_c.fetchall()
+	shuffle(tweets)
+	for row in tweets:
+		labelled_text.append(row[0])
+		labelled_usable.append(row[4])
+		labelled_sentiment.append(row[5])
+		labelled_final.append(row[6])
+	old_conn.close()
 
 # Partition into training vs. test data
-split_index = 2500
+split_index = 900
+if USE_OLD_DATA:
+	split_index = split_index + 3500
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -77,7 +82,6 @@ print("Features: ", features)
 #pdb.set_trace()
 
 # Train usable classifier
-#usable_clf = SVC(C=0.1,kernel='linear')
 usable_clf = BernoulliNB()
 usable_clf.fit(usable_train_dtmatrix.toarray(), train_usable_Y)
 

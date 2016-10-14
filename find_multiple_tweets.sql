@@ -23,4 +23,7 @@ ORDER BY username,date,sentiment*/
 
 --INSERT INTO full_sentiments (text,date,username,location,sentiment)
 --SELECT text,date,username,location,sentiment FROM climate_2016_04_29 WHERE not sentiment='n'
-SELECT COUNT(*) FROM full_sentiments
+--SELECT COUNT(*) FROM full_sentiments
+
+--SELECT COUNT(*) FROM climate_2016_03_04 WHERE date like 'Mon Feb 29 %' and sentiment='a' and text like '%action%'
+SELECT * FROM tweets WHERE text like '%obama%'
