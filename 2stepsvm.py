@@ -16,7 +16,7 @@ LOC_TRAIN_DB = 'data/training_data.db'
 LOC_OLD_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
 PREDICT = False
-USE_OLD_DATA = False 
+USE_OLD_DATA = True 
 PREDICT_TABLENAME = 'climate_2016_04_29'
 PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
@@ -59,7 +59,7 @@ if USE_OLD_DATA:
 	old_conn.close()
 
 # Partition into training vs. test data
-split_index = 900
+split_index = 2500
 if USE_OLD_DATA:
 	split_index = split_index + 3500
 train_usable_X = labelled_text[0:split_index]
@@ -73,7 +73,7 @@ test_Y = labelled_sentiment[split_index:]
 usable_cv = CountVectorizer()
 usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
-sel = SelectKBest(chi2,k=100)
+sel = SelectKBest(chi2,k=50)
 usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
 feature_list = usable_cv.get_feature_names()
 feature_map = sel.get_support()
