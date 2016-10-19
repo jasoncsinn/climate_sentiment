@@ -30,7 +30,7 @@ conn = sqlite3.connect(LOC_TRAIN_DB)
 c = conn.cursor()
 c.execute("SELECT * FROM tweets")
 tweets = c.fetchall()
-shuffle(tweets)
+#shuffle(tweets)
 for row in tweets:
 	labelled_text.append(row[0])
 	labelled_usable.append(row[4])
@@ -42,7 +42,7 @@ if USE_OLD_DATA:
 	old_c = old_conn.cursor()
 	old_c.execute("SELECT * FROM vince_refined_tweets")
 	tweets = old_c.fetchall()
-	shuffle(tweets)
+#	shuffle(tweets)
 	for row in tweets:
 		labelled_text.append(row[0])
 		labelled_usable.append(row[4])
@@ -50,7 +50,7 @@ if USE_OLD_DATA:
 		labelled_final.append(row[6])
 	old_c.execute("SELECT * FROM tweets")
 	tweets = old_c.fetchall()
-	shuffle(tweets)
+#	shuffle(tweets)
 	for row in tweets:
 		labelled_text.append(row[0])
 		labelled_usable.append(row[4])
@@ -70,10 +70,12 @@ test_X = labelled_text[split_index:]
 test_Y = labelled_sentiment[split_index:]
 
 # Extract features for usable classifier
-usable_cv = CountVectorizer()
+usable_cv = CountVectorizer(stop_words='english', ngram_range=(1,3))
+#usable_cv = CountVectorizer(stop_words='english')
+#usable_cv = CountVectorizer()
 usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
-sel = SelectKBest(chi2,k=50)
+sel = SelectKBest(chi2,k=1000)
 usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
 feature_list = usable_cv.get_feature_names()
 feature_map = sel.get_support()
