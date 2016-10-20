@@ -17,6 +17,8 @@ LOC_OLD_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
 PREDICT = False
 USE_OLD_DATA = True 
+PRINT_FEATURES = False
+PRINT_FULL_TEST_RESULTS = False
 PREDICT_TABLENAME = 'climate_2016_04_29'
 PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
 
@@ -56,12 +58,20 @@ if USE_OLD_DATA:
 		labelled_usable.append(row[4])
 		labelled_sentiment.append(row[5])
 		labelled_final.append(row[6])
+#	old_c.execute("SELECT * FROM vince_refined_tweets")
+#	tweets = old_c.fetchall()
+#	shuffle(tweets)
+#	for row in tweets:
+#		labelled_text.append(row[0])
+#		labelled_usable.append(row[4])
+#		labelled_sentiment.append(row[5])
+#		labelled_final.append(row[6])
 	old_conn.close()
 
 # Partition into training vs. test data
-split_index = 2500
-if USE_OLD_DATA:
-	split_index = split_index + 3500
+#split_index = 3300 + 2610 + 1011
+split_index = len(labelled_text) - 460
+print(split_index)
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -70,17 +80,16 @@ test_X = labelled_text[split_index:]
 test_Y = labelled_sentiment[split_index:]
 
 # Extract features for usable classifier
-usable_cv = CountVectorizer(stop_words='english', ngram_range=(1,3))
-#usable_cv = CountVectorizer(stop_words='english')
-#usable_cv = CountVectorizer()
+usable_cv = CountVectorizer(stop_words='english',ngram_range=(1,3),min_df=2)
 usable_cv = usable_cv.fit(train_usable_X)
 usable_train_dtmatrix = usable_cv.transform(train_usable_X)
-sel = SelectKBest(chi2,k=1000)
+sel = SelectKBest(chi2,k=10000)
 usable_train_dtmatrix = sel.fit_transform(usable_train_dtmatrix, train_usable_Y)
-feature_list = usable_cv.get_feature_names()
-feature_map = sel.get_support()
-features = [i for i,j in zip(feature_list, feature_map) if j == True]
-print("Features: ", features)
+if PRINT_FEATURES:
+	feature_list = usable_cv.get_feature_names()
+	feature_map = sel.get_support()
+	features = [i for i,j in zip(feature_list, feature_map) if j == True]
+	print("Features: ", features)
 #pdb.set_trace()
 
 # Train usable classifier
@@ -121,8 +130,9 @@ j = 0
 for i in sentiment_indices:
 	prediction[i] = sentiment_prediction[j]
 	j += 1
-#for i,j in zip(prediction,test_Y):
-#	print(i + ' ' + j)
+if PRINT_FULL_TEST_RESULTS:
+	for i,j in zip(prediction,test_Y):
+		print(i + ' ' + j)
 #print(len([i for i in test_Y if i == 's']))
 num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
