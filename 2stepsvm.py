@@ -8,19 +8,33 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2,f_classif
 
-from util import load_lines_from_file,parse_tweet
+from util import load_lines_from_file,parse_tweet,get_time_mask
 
 import pdb
+import sys
 
+# Logger
+class Logger(object):
+	def __init__(self):
+		self.terminal = sys.stdout
+		self.log = open("data/2stepsvm.log", "a")
+	def write(self, message):
+		self.terminal.write(message)
+		self.log.write(message)
+	def flush(self):
+		pass
+sys.stdout = Logger()
+
+# Flags
 LOC_TRAIN_DB = 'data/training_data.db'
 LOC_OLD_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
-PREDICT = False
 USE_OLD_DATA = True 
 PRINT_FEATURES = False
 PRINT_FULL_TEST_RESULTS = False
-PREDICT_TABLENAME = 'climate_2016_04_29'
-PREDICT_FILENAME = 'data/full_tweet_data/' + PREDICT_TABLENAME + '.txt'
+PREDICT = True
+PREDICT_TABLE_NAMES,_ = get_time_mask()
+PREDICT_BATCH_SIZE = 1000
 
 labelled_text = []
 labelled_usable = []
@@ -58,20 +72,11 @@ if USE_OLD_DATA:
 		labelled_usable.append(row[4])
 		labelled_sentiment.append(row[5])
 		labelled_final.append(row[6])
-#	old_c.execute("SELECT * FROM vince_refined_tweets")
-#	tweets = old_c.fetchall()
-#	shuffle(tweets)
-#	for row in tweets:
-#		labelled_text.append(row[0])
-#		labelled_usable.append(row[4])
-#		labelled_sentiment.append(row[5])
-#		labelled_final.append(row[6])
 	old_conn.close()
 
 # Partition into training vs. test data
-#split_index = 3300 + 2610 + 1011
 split_index = len(labelled_text) - 460
-print(split_index)
+print("Training set size: " + str(split_index))
 train_usable_X = labelled_text[0:split_index]
 train_usable_Y = labelled_usable[0:split_index]
 train_sentiment_X = [i for i,j in zip(labelled_text[0:split_index], labelled_sentiment[0:split_index]) if j != 'n']
@@ -90,7 +95,6 @@ if PRINT_FEATURES:
 	feature_map = sel.get_support()
 	features = [i for i,j in zip(feature_list, feature_map) if j == True]
 	print("Features: ", features)
-#pdb.set_trace()
 
 # Train usable classifier
 usable_clf = BernoulliNB()
@@ -108,7 +112,6 @@ false_negatives = [predict for predict,real in zip(results,usable_test_Y) if pre
 #print(" ".join(false_negatives))
 #print(len(usable_test_Y))
 relevant_usable_clf_acc = (100.0*(len(usable_test_Y) - len(false_positives)))/len(usable_test_Y)
-#pdb.set_trace()
 
 # Extract features for sentiment classifier
 sentiment_cv = CountVectorizer()
@@ -133,7 +136,6 @@ for i in sentiment_indices:
 if PRINT_FULL_TEST_RESULTS:
 	for i,j in zip(prediction,test_Y):
 		print(i + ' ' + j)
-#print(len([i for i in test_Y if i == 's']))
 num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
 sentiment_clf_acc = round(100.0*overall_acc / usable_clf_acc)
@@ -142,12 +144,10 @@ print('Relevant Usable Classifier Accuracy: ' + str(relevant_usable_clf_acc) + '
 print('Sentiment Classifier Accuracy: ' + str(sentiment_clf_acc) + '%')
 print('Overall Accuracy: ' + str(overall_acc) + '%')
 print('Relevant Accuracy: ' + str(relevant_usable_clf_acc * sentiment_clf_acc / 100.0) + '%')
-#pdb.set_trace()
 
-blacklist = ["#BustTheMyth :::", "Ricardo_AEA", "rainnwilson", "JettaH", "Crazy Bernie was the guy that claimed ISIS", "3803497941", "292785272", "BadManWizz", "1537476354", "726724131627122688", "Environment website::: Ricardo expert invited to Intergovernmental Panel", ":::FACE PALM::: x infinity!","25769092","166384151", "prassdfrimal","1495729418", "Are you f:::king kidding me.","3225213307", "jjasminnie","2371258508"]
+blacklist = []
 def check_blacklist(tweet_str):
 	check_components = tweet_str.split(':::')
-#	pdb.set_trace()
 	if len(check_components) != 6:
 		return False
 	for name in blacklist:
@@ -156,6 +156,52 @@ def check_blacklist(tweet_str):
 	return True
 
 # Predict
+if PREDICT:
+	with sqlite3.connect(LOC_PRED_DB) as pred_conn:
+		pred_c = pred_conn.cursor()
+
+		for table_name in PREDICT_TABLE_NAMES[68:]:
+			cur_line = 1
+			fn = 'data/full_tweet_data/' + table_name + '.txt'
+			tweets = load_lines_from_file(fn, PREDICT_BATCH_SIZE, cur_line)
+			while len(tweets) > 0:
+				print('Inferring sentiment with tweet #' + str(cur_line) + ' from ' + table_name)
+				texts = []
+				dates = []
+				usernames = []
+				locations = []
+				for tweet_str in tweets:
+					if check_blacklist(tweet_str):
+						date, text, username, location = parse_tweet(tweet_str)
+						dates.append(date)
+						texts.append(text)
+						usernames.append(username)
+						locations.append(location)
+				predict_dtmatrix = usable_cv.transform(texts)
+				predict_dtmatrix = sel.transform(predict_dtmatrix)
+				prediction = usable_clf.predict(predict_dtmatrix.toarray())
+
+				sentiment_predict_dtmatrix = sentiment_cv.transform([i for i,j in zip(texts, prediction) if j == 'y'])
+				sentiment_prediction = sentiment_clf.predict(sentiment_predict_dtmatrix)
+				sentiment_indices = [i for i in range(len(prediction)) if prediction[i] == 'y']
+				j = 0
+				for i in sentiment_indices:
+					prediction[i] = sentiment_prediction[j]
+					j += 1
+				
+				for i in range(len(texts)):
+					to_execute = "INSERT INTO " + table_name + " VALUES (\'"
+					to_execute += texts[i] + "\',\'" 
+					to_execute += dates[i] + "\',\'"
+					to_execute += usernames[i] + "\',\'" 
+					to_execute += locations[i] + "\',\'" 
+					to_execute += prediction[i] + "\')"
+					pred_c.execute(to_execute)
+					pred_conn.commit()
+
+				cur_line += PREDICT_BATCH_SIZE
+				tweets = load_lines_from_file(fn, PREDICT_BATCH_SIZE, cur_line)
+'''
 cur_line = 1
 batch_size = 1000
 while(PREDICT and cur_line < 1000000):
@@ -194,3 +240,4 @@ while(PREDICT and cur_line < 1000000):
 	pred_conn.close()
 	print("Connection closed. Exiting.")
 	cur_line += 1000
+'''

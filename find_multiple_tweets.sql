@@ -26,4 +26,6 @@ ORDER BY username,date,sentiment*/
 --SELECT COUNT(*) FROM full_sentiments
 
 --SELECT COUNT(*) FROM climate_2016_03_04 WHERE date like 'Mon Feb 29 %' and sentiment='a' and text like '%action%'
-SELECT * FROM tweets WHERE date like '%Jul%'
+--SELECT * FROM climate_2016_09_30 WHERE date like '%Sep 27%'  and sentiment='s'
+--SELECT * FROM tweets WHERE date like '%Jul%'
+SELECT COUNT(*) FROM full_sentiments

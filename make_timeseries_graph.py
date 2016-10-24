@@ -10,7 +10,7 @@ def extract_stats(line):
 	ske = int(ske)
 	return (date,act,ske)
 
-f = open('data/daybyday_tweet_stats_2016_fixed.txt')
+f = open('data/timeseries_data_fixed.txt')
 lines = f.readlines()
 f.close()
 
@@ -24,6 +24,10 @@ for line in lines:
 	acts.append(act)
 	skes.append(ske)
 
-fig, ax = plt.subplots()
-ax.plot_date(dates,acts,'-')
+ax1 = plt.subplot(211)
+ax2 = plt.subplot(212)
+ax1.plot_date(dates,acts,'-')
+ax1.set_title('Activists Timeseries Graph')
+ax2.plot_date(dates,skes,'-')
+ax2.set_title('Skepticals Timeseries Graph')
 plt.show()
