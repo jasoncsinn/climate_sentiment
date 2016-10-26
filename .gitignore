@@ -96,3 +96,7 @@ Vince_Talbot_Code_Training_Set/
 
 # Ignore predicted data database (upload to another source)
 data/predicted_data.db
+
+# Ignore large data files
+data/full_sentiments.txt
+data/lifetime_data.txt
