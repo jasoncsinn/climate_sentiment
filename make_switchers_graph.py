@@ -4,7 +4,9 @@ import numpy as np
 
 import pdb
 
-f = open('data/switcher_data.txt')
+#f = open('data/switcher_data.txt')
+#f = open('data/switcher_dicaprio.txt')
+f = open('data/switcher_bn_khaled.txt')
 lines = f.readlines()
 f.close()
 
@@ -16,31 +18,32 @@ activist_changes_more = {}
 skeptical_changes_more = {}
 
 for line in lines:
-	username,sentiments = line.strip("\n").split(" ", 1)
-	sentiments = sentiments.split(" ")
-	orig_sent = sentiments[0]
-	cur_index = 0
-	fut_index = 1
-	num_changes = 0
-	while fut_index < len(sentiments):
-		if sentiments[cur_index] != sentiments[fut_index]:
-			num_changes += 1
-		cur_index += 1
-		fut_index += 1
+	if len(line.strip("\n").split(" ", 1)) == 2:
+		username,sentiments = line.strip("\n").split(" ", 1)
+		sentiments = sentiments.split(" ")
+		orig_sent = sentiments[0]
+		cur_index = 0
+		fut_index = 1
+		num_changes = 0
+		while fut_index < len(sentiments):
+			if sentiments[cur_index] != sentiments[fut_index]:
+				num_changes += 1
+			cur_index += 1
+			fut_index += 1
 	#print(username + ":  " + str(num_changes) + " changes with " + str(len(sentiments)) + " tweets.")
 	#print(orig_sent)
-	if orig_sent == 'a' and len(sentiments) < 3:
-		activist_changes_3[num_changes] = activist_changes_3.get(num_changes,0) + 1
-	elif orig_sent == 'a' and len(sentiments) < 6:
-		activist_changes_5[num_changes] = activist_changes_5.get(num_changes,0) + 1
-	elif orig_sent == 'a':
-		activist_changes_more[num_changes] = activist_changes_more.get(num_changes,0) + 1
-	elif orig_sent == 's' and len(sentiments) < 3:
-		skeptical_changes_3[num_changes] = skeptical_changes_3.get(num_changes,0) + 1
-	elif orig_sent == 's' and len(sentiments) < 6:
-		skeptical_changes_5[num_changes] = skeptical_changes_5.get(num_changes,0) + 1
-	else:
-		skeptical_changes_more[num_changes] = skeptical_changes_more.get(num_changes,0) + 1
+		if orig_sent == 'a' and len(sentiments) < 3:
+			activist_changes_3[num_changes] = activist_changes_3.get(num_changes,0) + 1
+		elif orig_sent == 'a' and len(sentiments) < 6:
+			activist_changes_5[num_changes] = activist_changes_5.get(num_changes,0) + 1
+		elif orig_sent == 'a':
+			activist_changes_more[num_changes] = activist_changes_more.get(num_changes,0) + 1
+		elif orig_sent == 's' and len(sentiments) < 3:
+			skeptical_changes_3[num_changes] = skeptical_changes_3.get(num_changes,0) + 1
+		elif orig_sent == 's' and len(sentiments) < 6:
+			skeptical_changes_5[num_changes] = skeptical_changes_5.get(num_changes,0) + 1
+		else:
+			skeptical_changes_more[num_changes] = skeptical_changes_more.get(num_changes,0) + 1
 
 X_axis = np.arange(0,11)
 

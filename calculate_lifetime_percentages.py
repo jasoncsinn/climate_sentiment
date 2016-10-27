@@ -4,6 +4,9 @@ import numpy as np
 
 import pdb
 
+coverage = int(raw_input("What % of data should be covered? (ex: 90) "))
+coverage = 1.0 * coverage
+
 f = open('data/lifetime_data.txt')
 
 ske_lt = {}
@@ -31,16 +34,15 @@ Y_act_lt = [y*100.0/sum(Y_act_lt) for y in Y_act_lt] # rescale
 Y_ske_lt = [ske_lt.get(key,0) for key in X_axis]
 Y_ske_lt = [y*100.0/sum(Y_ske_lt) for y in Y_ske_lt] # rescale
 
-pdb.set_trace()
-
-fig = plt.figure()
-ax1 = fig.add_subplot(111)
-width = 0.4 
-rects1 = ax1.bar(X_axis, Y_act_lt, width, color='yellowgreen')
-rects2 = ax1.bar(X_axis+width, Y_ske_lt, width, color='lightskyblue')
-ax1.set_title('Lifetime Distribution')
-ax1.set_ylabel('% of population')
-ax1.set_xlabel('Lifetime (hours)')
-ax1.legend((rects1[0],rects2[0]), ('Activists', 'Skeptics'))
-
-plt.show()
+act_sum = 0.0
+a_hours = 0
+while act_sum < coverage:
+	act_sum += Y_act_lt[a_hours]
+	a_hours += 1
+ske_sum = 0.0
+s_hours = 0
+while ske_sum < coverage:
+	ske_sum += Y_ske_lt[s_hours]
+	s_hours += 1
+print("After " + str(a_hours) + " hours, " + str(act_sum) + "% of activist tweets have exhausted their lifetime.")
+print("After " + str(s_hours) + " hours, " + str(ske_sum) + "% of skeptical tweets have exhausted their lifetime.")

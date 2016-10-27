@@ -44,4 +44,4 @@ for w in custom_sw:
 
 sorted_ht = sorted(ht.items(), key=operator.itemgetter(1), reverse=True)
 print(str(sorted_ht[0:num_results]))
-pdb.set_trace()
+#pdb.set_trace()

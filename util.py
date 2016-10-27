@@ -4,6 +4,9 @@ from os import listdir
 def tweet_datetime(s):
 	return datetime.datetime.strptime(s, '%a %b %d %H:%M:%S +0000 %Y')
 
+def tweet_date(s):
+	return tweet_datetime(s).date()
+
 def load_lines_from_file(filename, max_lines=-1, start_line=1):
 	f = open(filename, 'r')
 	ret = []

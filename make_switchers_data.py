@@ -4,8 +4,39 @@ import datetime
 
 from util import get_time_mask,tweet_datetime
 
-LOC_PRED_DB = 'data/predicted_data.db'
-table_names, dates = get_time_mask()
+user_ht = {}
+with open('data/switcher_usernames.txt') as f:
+	for un in f:
+		un = un.strip()
+		user_ht[un] = {}
+linenum = 1
+#with open('data/full_sentiments.txt') as f:
+#with open('data/sentiments_dicaprio.txt') as f:
+with open('data/sentiments_bn_khaled.txt') as f:
+	for line in f:
+		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
+#		pdb.set_trace()
+		if username in user_ht:
+			
+			dt = tweet_datetime(date_str)
+			dt_s_ht = user_ht[username]
+			dt_s_ht[dt] = sentiment.strip()
+			user_ht[username] = dt_s_ht
+		print("Finished parsing line # " + str(linenum) + " username: " + username)
+		linenum += 1
+#pdb.set_trace()
+#with open ('data/switcher_data.txt', 'w') as f:
+#with open('data/switcher_dicaprio.txt', 'w') as f:
+with open('data/switcher_bn_khaled.txt', 'w') as f:
+	for username in user_ht:
+		to_write = username
+		dt_s_ht = user_ht[username]
+		sorted_dts = sorted(dt_s_ht.keys())
+		for dt in sorted_dts:
+			to_write += " " + dt_s_ht[dt]
+		to_write += "\n"
+		f.write(to_write)
+		print("Writing username: " + username + " # sentiments: " + str(len(sorted_dts)))
 
 #conn = sqlite3.connect(LOC_PRED_DB)
 #c = conn.cursor()

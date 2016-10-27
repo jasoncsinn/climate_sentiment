@@ -5,20 +5,24 @@ import numpy as np
 import pdb
 
 f = open('data/lifetime_data.txt')
-lines = f.readlines()
-f.close()
 
 ske_rt = {}
 act_rt = {}
 
-for line in lines:
-	text,lt,rt,sent = line.split(' ::---:: ')
-	rt = int(rt)
+linenum = 1
+
+for line in f:
+	if len(line.split(' ::---:: ')) == 4:
+		text,lt,rt,sent = line.split(' ::---:: ')
+		rt = int(rt)
 	#print(sent.strip())
-	if 'a' in sent:
-		act_rt[rt] = act_rt.get(rt,0) + 1
-	else:
-		ske_rt[rt] = ske_rt.get(rt,0) + 1
+		if 'a' in sent:
+			act_rt[rt] = act_rt.get(rt,0) + 1
+		else:
+			ske_rt[rt] = ske_rt.get(rt,0) + 1
+	print(str(linenum))
+	linenum += 1
+f.close()
 
 X_axis = np.arange(2,50)
 Y_act_rt = [act_rt.get(key,0) for key in X_axis]

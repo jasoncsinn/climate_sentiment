@@ -100,3 +100,5 @@ data/predicted_data.db
 # Ignore large data files
 data/full_sentiments.txt
 data/lifetime_data.txt
+data/switcher_*.txt
+data/sentiments_*.txt
