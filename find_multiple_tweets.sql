@@ -30,7 +30,7 @@ ORDER BY username,date,sentiment*/
 --SELECT text,date,username,location,sentiment FROM climate_2016_04_29 WHERE not sentiment='n'
 --SELECT COUNT(*) FROM full_sentiments
 
-SELECT * FROM climate_2016_05_06 WHERE date like '%May 01%' and sentiment='a'
+SELECT * FROM climate_2016_05_06 WHERE date like '%May 01%' and sentiment='a' and text like '%want%major%'
 --SELECT * FROM climate_2016_09_30 WHERE date like '%Sep 27%'  and sentiment='s'
 --SELECT * FROM tweets WHERE date like '%Jul%'
 --SELECT COUNT(*) FROM full_sentiments
