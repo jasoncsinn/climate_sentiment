@@ -8,13 +8,14 @@ table_names, dates = get_time_mask()
 conn = sqlite3.connect('data/predicted_data.db')
 c = conn.cursor()
 
-start_dt = datetime.datetime(2016,5,1,0,0,0)
-end_dt = datetime.datetime(2016,5,11,0,0,0)
+start_dt = datetime.datetime(2015,12,2,0,0,0)
+end_dt = datetime.datetime(2015,12,12,0,0,0)
 
 #with open ('data/sentiments_dicaprio.txt', 'w') as f:
-with open ('data/sentiments_bn_khaled.txt', 'w') as f:
-	for t_n in table_names[59:61]:
-		tweets = c.execute("SELECT * FROM " + t_n + " WHERE not sentiment = 'n'")
+with open ('data/tsr_cop21/sentiments_cop21_pre.txt', 'w') as f:
+	for t_n in table_names[35:42]:
+#		tweets = c.execute("SELECT * FROM " + t_n + " WHERE not sentiment = 'n'")
+		tweets = c.execute("SELECT * FROM " + t_n)
 		print("Done querying table " + t_n)
 		to_write = []
 		for t in tweets:

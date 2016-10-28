@@ -9,7 +9,7 @@ def extract_stats(line):
 	num = int(num)
 	return (date,num)
 
-f = open('data/total_tweets_2016_fixed.txt')
+f = open('data/total_tweets_fixed.txt')
 lines = f.readlines()
 f.close()
 
@@ -21,6 +21,10 @@ for line in lines:
 	dates.append(date)
 	nums.append(num)
 
-fig, ax = plt.subplots()
+
+ax = plt.subplot(111)
 ax.plot_date(dates,nums,'-')
+ax.set_title('Total # of Tweets per day')
+ax.set_ylabel('# of Tweets')
+ax.set_xlabel('Date')
 plt.show()

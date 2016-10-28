@@ -1,0 +1,42 @@
+MODE: FIRST
+# of pre activists: 20589
+# of pre skeptics: 1970
+# of pre others: 24742
+# of post activists: 24499
+# of post skeptics: 1996
+# of post others: 20806
+Raw nums 
+orig=s post=a num: 663
+orig=a post=s num: 622
+orig=n post=a num: 11862
+orig=n post=s num: 1073
+orig=s post=n num: 1006
+orig=a post=n num: 7993
+Proportions 
+orig=s post=a num: 33.65
+orig=a post=s num: 3.02
+orig=n post=a num: 47.94
+orig=n post=s num: 4.34
+orig=s post=n num: 51.07
+orig=a post=n num: 38.82
+MODE: LAST
+# of pre activists: 20589
+# of pre skeptics: 1970
+# of pre others: 24742
+# of post activists: 24131
+# of post skeptics: 2143
+# of post others: 21029
+Raw nums 
+orig=s post=a num: 662
+orig=a post=s num: 689
+orig=n post=a num: 11574
+orig=n post=s num: 1187
+orig=s post=n num: 1041
+orig=a post=n num: 8005
+Proportions 
+orig=s post=a num: 33.6
+orig=a post=s num: 3.35
+orig=n post=a num: 46.78
+orig=n post=s num: 4.8
+orig=s post=n num: 52.84
+orig=a post=n num: 38.88
