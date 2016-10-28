@@ -13,7 +13,7 @@ class User:
 linenum = 1
 ht = {}
 
-with open('data/tsr_cop21/sentiments_cop21_pre.txt') as f:
+with open('data/tsr_bn_khaled/sentiments_bn_khaled_pre.txt') as f:
 	for line in f:
 		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
 		user = ht.get(username, User())
@@ -28,7 +28,7 @@ with open('data/tsr_cop21/sentiments_cop21_pre.txt') as f:
 #pdb.set_trace()
 
 linenum = 1
-with open('data/tsr_cop21/sentiments_cop21_post.txt') as f:
+with open('data/tsr_bn_khaled/sentiments_bn_khaled_post.txt') as f:
 	for line in f:
 		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
 		if username in ht:
@@ -40,7 +40,7 @@ with open('data/tsr_cop21/sentiments_cop21_post.txt') as f:
 			print("Finished parsing line # " + str(linenum) + " username: " + username)
 			linenum += 1
 #pdb.set_trace()
-with open('data/tsr_cop21/switcher_cop21.txt', 'w') as f:
+with open('data/tsr_bn_khaled/switcher_bn_khaled.txt', 'w') as f:
 	for username in ht:
 		to_write = username
 		user = ht[username]

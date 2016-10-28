@@ -9,7 +9,7 @@ import sys
 class Logger(object):
 	def __init__(self):
 		self.terminal = sys.stdout
-		self.log = open("data/tsr_cop21/results.txt", "a")
+		self.log = open("data/tsr_bn_khaled/tsr_switcher_stats_bn_khaled.txt", "a")
 	def write(self, message):
 		self.terminal.write(message)
 		self.log.write(message)
@@ -23,7 +23,7 @@ n = [0, 0, 0, 0, 0, 0]
 
 MODE = "LAST"
 
-with open('data/tsr_cop21/switcher_cop21.txt') as f:
+with open('data/tsr_bn_khaled/switcher_bn_khaled.txt') as f:
 	for line in f:
 		if len(line.strip("\n").split(" ")) > 4:
 			username, _, _, pre, post = line.strip('\n').split(" ", 4)
