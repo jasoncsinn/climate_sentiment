@@ -12,7 +12,7 @@ with open('data/switcher_usernames.txt') as f:
 linenum = 1
 #with open('data/full_sentiments.txt') as f:
 #with open('data/sentiments_dicaprio.txt') as f:
-with open('data/sentiments_bn_khaled.txt') as f:
+with open('data/switchers/sentiments_bn_khaled.txt') as f:
 	for line in f:
 		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
 #		pdb.set_trace()
@@ -27,7 +27,7 @@ with open('data/sentiments_bn_khaled.txt') as f:
 #pdb.set_trace()
 #with open ('data/switcher_data.txt', 'w') as f:
 #with open('data/switcher_dicaprio.txt', 'w') as f:
-with open('data/switcher_bn_khaled.txt', 'w') as f:
+with open('data/switchers/switcher_bn_khaled.txt', 'w') as f:
 	for username in user_ht:
 		to_write = username
 		dt_s_ht = user_ht[username]

@@ -4,7 +4,7 @@ import numpy as np
 
 import pdb
 
-f = open('data/switcher_earthday.txt')
+f = open('data/switchers/switcher_earthday.txt')
 lines = f.readlines()
 f.close()
 
