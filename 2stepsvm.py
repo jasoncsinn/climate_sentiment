@@ -32,7 +32,8 @@ LOC_PRED_DB = 'data/predicted_data.db'
 USE_OLD_DATA = True 
 PRINT_FEATURES = False
 PRINT_FULL_TEST_RESULTS = False
-PREDICT = True
+PRINT_CONFUSION_MATRIX = True
+PREDICT = False
 PREDICT_TABLE_NAMES,_ = get_time_mask()
 PREDICT_BATCH_SIZE = 1000
 
@@ -66,7 +67,7 @@ if USE_OLD_DATA:
 		labelled_final.append(row[6])
 	old_c.execute("SELECT * FROM tweets")
 	tweets = old_c.fetchall()
-#	shuffle(tweets)
+	shuffle(tweets)
 	for row in tweets:
 		labelled_text.append(row[0])
 		labelled_usable.append(row[4])
@@ -135,7 +136,19 @@ for i in sentiment_indices:
 	j += 1
 if PRINT_FULL_TEST_RESULTS:
 	for i,j in zip(prediction,test_Y):
-		print(i + ' ' + j)
+		print(i + " " + j)
+
+if PRINT_CONFUSION_MATRIX:
+	mat = np.zeros((3,3), dtype=int)
+	preds = ['a', 's', 'n']
+	acts = ['a', 's', 'n']
+	for pred,act in zip(prediction,test_Y):
+		for i,actual in enumerate(acts):
+			for j,predict in enumerate(preds):
+				if pred == predict and act == actual:
+					mat[i,j] += 1
+	print(mat)
+
 num_correct = len([i for i,j in zip(prediction,test_Y) if i == j])
 overall_acc = round(100.0*num_correct/len(prediction),4)
 sentiment_clf_acc = round(100.0*overall_acc / usable_clf_acc)
