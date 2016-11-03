@@ -23,9 +23,9 @@ a = [0, 0, 0, 0, 0, 0]
 n = [0, 0, 0, 0, 0, 0]
 
 MODE = "LAST"
-TITLE = "Trump Climate Change Debate - Sep 27th, 2016"
+TITLE = "Earth Day - Apr 22nd, 2016"
 
-with open('data/tsr_trump/switcher_trump.txt') as f:
+with open('data/tsr_earthday/switcher_earthday.txt') as f:
 	for line in f:
 		if len(line.strip("\n").split(" ")) > 4:
 			username, _, _, pre, post = line.strip('\n').split(" ", 4)
