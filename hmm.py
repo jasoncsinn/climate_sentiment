@@ -2,14 +2,8 @@ import numpy as np
 import pdb
 
 from hmmlearn import hmm
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_selection import SelectKBest, chi2
 
 states = ['A', 'S', 'O']
-n_states = len(states)
-
-observations = ['A', 'S', 'O']
-n_observations = len(observations)
 
 encoder = {}
 encoder['a'] = 0
