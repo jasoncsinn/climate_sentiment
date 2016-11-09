@@ -2,8 +2,9 @@ import pdb
 import datetime
 import matplotlib.pyplot as plt
 
-WORD = 'manufacturing'
-INDEX_A = 26 # index in line where to extract num for activists
+WORDS = ['trump', 'hoax', 'scandal', 'chinese', 'manufacturing']
+WORD_INDEX = 4
+INDEX_A = 2 + WORD_INDEX * 6 # index in line where to extract num for activists
 INDEX_S = INDEX_A + 2
 INDEX_N = INDEX_A + 4
 # Example: 2015-01-01 word1 1 word2 2 word3 3
@@ -36,9 +37,10 @@ ax1.plot_date(dates,acts,'-')
 ax2.plot_date(dates,skes,'-')
 ax3.plot_date(dates,others,'-')
 
-ax1.set_title('Activist timeseries for word: ' + WORD + ' from: ' + str(dates[0]) + ' to: ' + str(dates[-1]))
-ax2.set_title('Skeptic timeseries for word: ' + WORD + ' from: ' + str(dates[0]) + ' to: ' + str(dates[-1]))
-ax3.set_title('Other timeseries for word: ' + WORD + ' from: ' + str(dates[0]) + ' to: ' + str(dates[-1]))
+title = "timeseries for word: " + WORDS[WORD_INDEX] + " from: " + str(dates[0]) + " to: " + str(dates[-1])
+ax1.set_title('Activist ' + title)
+ax2.set_title('Skeptic ' + title)
+ax3.set_title('Other ' + title)
 
 plt.tight_layout()
 plt.show()

@@ -10,7 +10,7 @@ import sys
 class Logger(object):
 	def __init__(self):
 		self.terminal = sys.stdout
-		self.log = open("data/tsr_bn_khaled/tsr_switcher_stats_bn_khaled.txt", "a")
+		self.log = open("data/tsr_control/tsr_switcher_stats_control.txt", "a")
 	def write(self, message):
 		self.terminal.write(message)
 		self.log.write(message)
@@ -19,13 +19,13 @@ class Logger(object):
 #sys.stdout = Logger()
 
 s = [0, 0, 0, 0, 0, 0] # [to_a[0], to_n[0], to_a[last], to_n[last], numorig, numfinal]
-a = [0, 0, 0, 0, 0, 0]
-n = [0, 0, 0, 0, 0, 0]
+a = [0, 0, 0, 0, 0, 0] # [to_s[0], to_n[0], to_s[last], to_n[last],
+n = [0, 0, 0, 0, 0, 0] # [to_a[0], to_s[0]
 
-MODE = "LAST"
-TITLE = "Earth Day - Apr 22nd, 2016"
+MODE = "FIRST"
+TITLE = "Control Graph - May 22nd to Jun 11th, 2016"
 
-with open('data/tsr_earthday/switcher_earthday.txt') as f:
+with open('data/tsr_control/switcher_control.txt') as f:
 	for line in f:
 		if len(line.strip("\n").split(" ")) > 4:
 			username, _, _, pre, post = line.strip('\n').split(" ", 4)
@@ -165,12 +165,9 @@ G.add_node('Others', pos=(6,0))
 G.add_node('Activists2', pos=(0,-6))
 G.add_node('Skeptics2', pos=(3,-3))
 G.add_node('Others2', pos=(6,-6))
-G.add_node('ActivistsP', pos=(9,0))
-G.add_node('SkepticsP', pos=(12,3))
-G.add_node('OthersP', pos=(15,0))
-G.add_node('Activists2P', pos=(9,-6))
-G.add_node('Skeptics2P', pos=(12,-3))
-G.add_node('Others2P', pos=(15,-6))
+G.add_node('ActivistsP', pos=(9,-3))
+G.add_node('SkepticsP', pos=(12,0))
+G.add_node('OthersP', pos=(15,-3))
 
 G.add_edge('Activists', 'Skeptics', weight=a[i[0]])
 G.add_edge('Skeptics', 'Others', weight=s[i[1]])
@@ -178,12 +175,12 @@ G.add_edge('Others', 'Activists', weight=n[i[0]])
 G.add_edge('Activists2', 'Others2', weight=a[i[1]])
 G.add_edge('Skeptics2', 'Activists2', weight=s[i[0]])
 G.add_edge('Others2', 'Skeptics2', weight=n[i[1]])
-G.add_edge('ActivistsP', 'SkepticsP', weight=a_normed[i[0]])
-G.add_edge('SkepticsP', 'OthersP', weight=s_normed[i[1]])
-G.add_edge('OthersP', 'ActivistsP', weight=n_normed[i[0]])
-G.add_edge('Activists2P', 'Others2P', weight=a_normed[i[1]])
-G.add_edge('Skeptics2P', 'Activists2P', weight=s_normed[i[0]])
-G.add_edge('Others2P', 'Skeptics2P', weight=n_normed[i[1]])
+G.add_edge('ActivistsP', 'SkepticsP', weight=(a[i[0]] - s[i[0]]))
+G.add_edge('SkepticsP', 'OthersP', weight=(s[i[1]] - n[i[1]]))
+G.add_edge('OthersP', 'ActivistsP', weight=(n[i[0]] - a[i[1]]))
+G.add_edge('SkepticsP', 'ActivistsP', weight=(a[i[0]] - s[i[0]]))
+G.add_edge('OthersP', 'SkepticsP', weight=(s[i[1]] - n[i[1]]))
+G.add_edge('ActivistsP', 'OthersP', weight=(n[i[0]] - a[i[1]]))
 
 pos=nx.get_node_attributes(G, 'pos')
 nx.draw_networkx_nodes(G, pos, nodelist = ['Activists'], node_color='yellowgreen', node_size=3000)
@@ -195,9 +192,6 @@ nx.draw_networkx_nodes(G, pos, nodelist = ['Others2'], node_color='lightgray', n
 nx.draw_networkx_nodes(G, pos, nodelist = ['ActivistsP'], node_color='yellowgreen', node_size=3000)
 nx.draw_networkx_nodes(G, pos, nodelist = ['SkepticsP'], node_color='lightcoral', node_size=3000)
 nx.draw_networkx_nodes(G, pos, nodelist = ['OthersP'], node_color='lightgray', node_size=3000)
-nx.draw_networkx_nodes(G, pos, nodelist = ['Activists2P'], node_color='yellowgreen', node_size=3000)
-nx.draw_networkx_nodes(G, pos, nodelist = ['Skeptics2P'], node_color='lightcoral', node_size=3000)
-nx.draw_networkx_nodes(G, pos, nodelist = ['Others2P'], node_color='lightgray', node_size=3000)
 nx.draw_networkx_edges(G, pos)
 
 edge_labels = nx.get_edge_attributes(G, 'weight')
@@ -213,9 +207,6 @@ node_labels['Others2'] = 'Others'
 node_labels['ActivistsP'] = 'Activists'
 node_labels['SkepticsP'] = 'Skeptics'
 node_labels['OthersP'] = 'Others'
-node_labels['Activists2P'] = 'Activists'
-node_labels['Skeptics2P'] = 'Skeptics'
-node_labels['Others2P'] = 'Others'
 nx.draw_networkx_labels(G, pos, node_labels, font_size=12)
 
 plt.suptitle(TITLE + '\nMODE: ' + MODE)
