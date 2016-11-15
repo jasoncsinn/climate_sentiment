@@ -94,14 +94,21 @@ data/full_tweet_data/
 # Ignore modifications to Vince Talbot' code from last term.
 Vince_Talbot_Code_Training_Set/
 
+# Ignore old data files.
+old/
+
 # Ignore predicted data database (upload to another source)
 data/predicted_data.db
+
+# Ignore tensorflow data
+tf_data/
 
 # Ignore large data files
 data/full_sentiments.txt
 data/lifetime_data.txt
 
 data/switchers/
+data/hmm/
 
 data/tsr_dicaprio
 data/tsr_cop21

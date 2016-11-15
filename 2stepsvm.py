@@ -1,6 +1,7 @@
 import numpy as np
 import sqlite3
 from random import shuffle
+import matplotlib.pyplot as plt
 
 from sklearn.svm import LinearSVC,SVC
 from sklearn.naive_bayes import BernoulliNB
@@ -23,28 +24,112 @@ class Logger(object):
 		self.log.write(message)
 	def flush(self):
 		pass
-sys.stdout = Logger()
+#sys.stdout = Logger()
 
 # Flags
-LOC_TRAIN_DB = 'data/training_data.db'
+LOC_TRAIN_DB = 'data/refined_training_data.db'
 LOC_OLD_TRAIN_DB = 'data/labelled_data.db'
 LOC_PRED_DB = 'data/predicted_data.db'
-USE_OLD_DATA = True 
+USE_OLD_DATA = True
 PRINT_FEATURES = False
-PRINT_FULL_TEST_RESULTS = False
+PRINT_FULL_VALIDATION_RESULTS = False
 PRINT_CONFUSION_MATRIX = True
 PREDICT = False
 PREDICT_TABLE_NAMES,_ = get_time_mask()
 PREDICT_BATCH_SIZE = 1000
+stop_words = ['global', 'warming', 'globalwarming', 'climate', 'climate', 'climatechange', 'http', 'https']
+PLOT_NUM_FEATURES = False
+
+# Setup database connection and load data
+conn = sqlite3.connect(LOC_TRAIN_DB)
+c = conn.cursor()
+c.execute("SELECT * FROM training")
+tr_d = c.fetchall()
+c.execute("SELECT * FROM test")
+te_d = c.fetchall()
+c.execute("SELECT * FROM validation")
+va_d = c.fetchall()
+
+#shuffle(tr_d)
+
+tr_a = [d for d in tr_d if d[2] == 'a']
+tr_s = [d for d in tr_d if d[2] == 's']
+tr_o = [d for d in tr_d if d[2] == 'n']
+
+tr_d = np.concatenate((tr_a[:800],tr_s[:800],tr_o[:800]), axis=0).tolist()
+
+#for data in tr_d:
+#	c.execute("INSERT INTO refined_training VALUES ('" + data[0] + "','" + data[1] + "','" + data[2] + "')")
+
+#conn.commit()
+
+tr_x = [d[0] for d in tr_d]
+tr_y_ = [d[2] for d in tr_d]
+te_x = [d[0] for d in te_d]
+te_y_ = [d[2] for d in te_d]
+va_x = [d[0] for d in va_d]
+va_y_ = [d[2] for d in va_d]
+
+pdb.set_trace()
+
+x = range(1000,1001)
+if PLOT_NUM_FEATURES:
+	x = range(1,5000,50)
+	y = []
+for num_features in x:	
+	#Extract features
+	cv = CountVectorizer(stop_words=stop_words)
+	cv = cv.fit(tr_x)
+	tr_dtmat = cv.transform(tr_x)
+	sel = SelectKBest(chi2,k=num_features)
+	tr_dtmat = sel.fit_transform(tr_dtmat,tr_y_)
+
+	if PRINT_FEATURES:
+		feature_list = cv.get_feature_names()
+		feature_map = sel.get_support()
+		features = [i for i,j in zip(feature_list, feature_map) if j == True]
+		print("Features: " + ','.join(features))
+
+	# Train
+	clf = LinearSVC(penalty='l2')
+	clf.fit(tr_dtmat.toarray(),tr_y_)
+	
+	# Validate
+	va_dtmat = cv.transform(va_x)
+	va_dtmat = sel.transform(va_dtmat)
+	predicted = clf.predict(va_dtmat)
+
+	if PRINT_FULL_VALIDATION_RESULTS:
+		for i,j,k in zip(predicted,va_y_, va_x):
+			print("Predicted: " + i + " Actual: " + j + " Text: " + k)
+
+	va_acc = 100.0 * clf.score(va_dtmat, va_y_)
+	print("Validation Accuracy: " + str(va_acc) + " num_features: " + str(num_features))
+	if PLOT_NUM_FEATURES:
+		y.append(va_acc)
+
+	if PRINT_CONFUSION_MATRIX:
+		mat = np.zeros((3,3), dtype=int)
+		preds = ['a', 's', 'n']
+		acts = ['a', 's', 'n']
+		for pred,act in zip(predicted,va_y_):
+			for i,actual in enumerate(acts):
+				for j,predict in enumerate(preds):
+					if pred == predict and act == actual:
+						mat[i,j] += 1
+		print(mat)
+
+if PLOT_NUM_FEATURES:
+	ax = plt.subplot(111)
+	ax.plot(x,y,'-')
+	plt.show()
+'''
 
 labelled_text = []
 labelled_usable = []
 labelled_sentiment = []
 labelled_final = []
 
-# Setup database connection and load data
-conn = sqlite3.connect(LOC_TRAIN_DB)
-c = conn.cursor()
 c.execute("SELECT * FROM tweets")
 tweets = c.fetchall()
 #shuffle(tweets)
@@ -214,6 +299,7 @@ if PREDICT:
 
 				cur_line += PREDICT_BATCH_SIZE
 				tweets = load_lines_from_file(fn, PREDICT_BATCH_SIZE, cur_line)
+'''
 '''
 cur_line = 1
 batch_size = 1000
