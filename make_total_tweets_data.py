@@ -9,19 +9,15 @@ def tweet_date(db_tweet):
 
 table_names, dates = get_time_mask()
 
-conn = sqlite3.connect('data/predicted_data.db')
+conn = sqlite3.connect('data/refined_predicted_data.db')
 c = conn.cursor()
 delta = datetime.timedelta(1)
 
-f = open('data/total_tweets_2016.txt', 'w')
-#for i in range(1):
+f = open('data/total_tweets.txt', 'w')
 for i in range(len(table_names)):
 	cur_date = dates[i]
 	end_date = dates[i+1]
 	c.execute("SELECT * FROM " + table_names[i])
-#	cur_date = datetime.date(2016,9,30)
-#	end_date = datetime.date(2016,10,7)
-#	c.execute("SELECT * FROM climate_2016_10_07")
 	db_tweets = c.fetchall()
 	date_mask = []
 	while cur_date <= end_date:

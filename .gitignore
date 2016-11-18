@@ -99,13 +99,13 @@ old/
 
 # Ignore predicted data database (upload to another source)
 data/predicted_data.db
+data/refined_predicted_data.db
 
 # Ignore tensorflow data
 tf_data/
 
 # Ignore large data files
-data/full_sentiments.txt
-data/lifetime_data.txt
+data/*.txt
 
 data/switchers/
 data/hmm/

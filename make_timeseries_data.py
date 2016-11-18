@@ -9,7 +9,7 @@ def tweet_date(db_tweet):
 
 table_names, dates = get_time_mask()
 
-conn = sqlite3.connect('data/predicted_data.db')
+conn = sqlite3.connect('data/refined_predicted_data.db')
 c = conn.cursor()
 delta = datetime.timedelta(1)
 

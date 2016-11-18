@@ -9,13 +9,14 @@ from sklearn.feature_selection import SelectKBest,chi2
 from sklearn.calibration import CalibratedClassifierCV
 
 from text_processor import process_text
+from util import get_time_mask,load_lines_from_file,can_parse,parse_tweet
 
 import pdb
 import sys
 
 LOC_TRAIN_DB = 'data/refined_training_data.db'
 LOC_LOG = 'data/svm.log'
-LOG_ENABLED = False
+LOG_ENABLED = True
 PRINT_FULL_RESULTS = False
 PRINT_CONFUSION_MATRIX = True
 PRINT_FEATURES = False
@@ -29,10 +30,13 @@ USE_STOP_WORDS = False # Only works if CLEAN_TEXT = True
 REGULARIZATION = 'l2'
 
 RUN_VALIDATION_SET = True
-RUN_TEST_SET = False
+RUN_TEST_SET = True
 
-PREDICT = False
+PREDICT = True
 LOC_PRED_DB = 'data/refined_predicted_data.db'
+table_names,_ = get_time_mask()
+PRED_BATCH_SIZE = 10000
+blacklist = []
 
 if USE_STOP_WORDS:
 	stop_words = ['climate', 'change', 'climatechange', 'global', 'warming', 'globalwarming']
@@ -134,18 +138,23 @@ if RUN_VALIDATION_SET:
 	va_dtmat = sel.transform(va_dtmat)
 	predicted = clf.predict(va_dtmat)
 
+	# Create probability mask
 	probs = clf.predict_proba(va_dtmat)
+	confidences = []
 	prob_mask = []
 	for i in range(len(probs)):
 		prob = max(probs[i])
+		confidences.append(prob)
 		if prob > CONFIDENCE_THRESHOLD:
 			prob_mask.append(True)
 		else:
 			prob_mask.append(False)
 
+	# Apply probability mask
 	masked_pred = [i for i,j in zip(predicted, prob_mask) if j ==True]
 	masked_actual = [i for i,j in zip(va_y_, prob_mask) if j == True]
 
+	# Statistics
 	num_correct = sum([1 for i,j in zip(masked_pred, masked_actual) if i == j])
 	total = len(masked_pred)
 
@@ -168,9 +177,10 @@ if RUN_VALIDATION_SET:
 	print("Validation Accuracy: " + str(va_acc))
 
 	if PRINT_FULL_RESULTS:
-		for i,j,k in zip(predicted,va_y_, pva_x):
+		for i,j,k,l in zip(predicted,va_y_, pva_x, confidences):
 			to_print = "Predicted " + i
 			to_print += " Actual " + j
+			to_print += " Confidence: " + str(l)
 			to_print += " Text: " + k
 			print(to_print)
 
@@ -192,18 +202,23 @@ if RUN_TEST_SET:
 	te_dtmat = sel.transform(te_dtmat)
 	predicted = clf.predict(te_dtmat)
 
+	# Create probability mask
 	probs = clf.predict_proba(te_dtmat)
 	prob_mask = []
+	confidences = []
 	for i in range(len(probs)):
 		prob = max(probs[i])
+		confidences.append(prob)
 		if prob > CONFIDENCE_THRESHOLD:
 			prob_mask.append(True)
 		else:
 			prob_mask.append(False)
 
+	# Apply probability mask
 	masked_pred = [i for i,j in zip(predicted, prob_mask) if j ==True]
 	masked_actual = [i for i,j in zip(te_y_, prob_mask) if j == True]
 
+	# Statistics
 	num_correct = sum([1 for i,j in zip(masked_pred, masked_actual) if i == j])
 	total = len(masked_pred)
 
@@ -226,9 +241,10 @@ if RUN_TEST_SET:
 	print("Accuracy: " + str(te_acc))
 
 	if PRINT_FULL_RESULTS:
-		for i,j,k in zip(predicted,te_y_, pte_x):
+		for i,j,k,l in zip(predicted,te_y_, pte_x,confidences):
 			to_print = "Predicted " + i
 			to_print += " Actual " + j
+			to_print += " Confidence: " + str(l)
 			to_print += " Text: " + k
 			print(to_print)
 
@@ -243,3 +259,63 @@ if RUN_TEST_SET:
 						mat[i,j] += 1
 		print(mat)
 	print("Done.\n")
+
+
+if PREDICT:
+	print("Prediction Phase\n----------")
+	with sqlite3.connect(LOC_PRED_DB) as pred_conn:
+		pred_c = pred_conn.cursor()
+
+		for table_name in table_names[:]:
+			cur_line = 1
+			fn = 'data/full_tweet_data/' + table_name + '.txt'
+			tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)
+			while len(tweets) > 0:
+				print('Inferring sentiment with tweet # ' + str(cur_line) + ' from ' + table_name)
+				# Build data
+				texts = []
+				dates = []
+				usernames = []
+				locations = []
+				for tweet_str in tweets:
+					if can_parse(tweet_str, blacklist):
+						date, text, username, location = parse_tweet(tweet_str)
+						dates.append(date)
+						texts.append(text)
+						usernames.append(username)
+						locations.append(location)
+				# Infer data
+				ppred_x = [process_text(x, stop_words) for x in texts]
+				pred_dtmat = cv.transform(ppred_x)
+				pred_dtmat = sel.transform(pred_dtmat)
+				pred_predictions = clf.predict(pred_dtmat)
+
+				# Build probability mask
+				pred_probs = clf.predict_proba(pred_dtmat)
+				prob_mask = []
+				for i in range(len(pred_probs)):
+					prob = max(pred_probs[i])
+					if prob > CONFIDENCE_THRESHOLD:
+						prob_mask.append(True)
+					else:
+						prob_mask.append(False)
+
+				# Apply probability mask
+				m_dates = [i for i,j in zip(dates, prob_mask) if j == True]
+				m_texts = [i for i,j in zip(texts, prob_mask) if j == True]
+				m_usernames = [i for i,j in zip(usernames, prob_mask) if j == True]
+				m_locations = [i for i,j in zip(locations, prob_mask) if j == True]
+				m_sents = [i for i,j in zip(pred_predictions, prob_mask) if j == True]
+
+				# Insert into database
+				for i in range(len(m_dates)):
+					to_execute = "INSERT INTO " + table_name + " VALUES (\'"
+					to_execute += m_texts[i] + "\',\'"
+					to_execute += m_dates[i] + "\',\'"
+					to_execute += m_usernames[i] + "\',\'"
+					to_execute += m_locations[i] + "\',\'"
+					to_execute += m_sents[i] + "\')"
+					pred_c.execute(to_execute)
+				cur_line += PRED_BATCH_SIZE
+				tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)
+	print("Done.")

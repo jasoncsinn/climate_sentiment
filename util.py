@@ -36,6 +36,15 @@ def get_time_mask():
 		dates.append(dt)
 	return (table_names, dates)
 
+def can_parse(tweet_str, blacklist):
+	check_components = tweet_str.split(':::')
+	if len(check_components) != 6:
+		return False
+	for name in blacklist:
+		if name in tweet_str:
+			return False
+	return True
+
 def parse_tweet(tweet_str):
 	tweet_str = tweet_str.strip().strip("{").strip("}")
 	components = tweet_str.split(":::")

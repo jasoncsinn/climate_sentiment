@@ -1,7 +1,7 @@
 import datetime
 import pdb
 
-DATA_LOC = 'data/total_tweets_2016.txt'
+DATA_LOC = 'data/total_tweets.txt'
 
 def extract_stats(line):
 	date,num = line.split(" ",1)
@@ -13,7 +13,7 @@ f = open(DATA_LOC, 'r')
 lines = f.readlines()
 f.close()
 
-f = open('data/total_tweets_2016_fixed.txt', 'w')
+f = open('data/total_tweets_fixed.txt', 'w')
 
 cur_index = 1
 prev_index = 0
