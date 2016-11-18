@@ -3,14 +3,15 @@ import pdb
 
 from hmmlearn import hmm
 
-states = ['A', 'S', 'O']
+hidden_states = ['A', 'S']
+observable_states = ['A', 'S', 'O']
 
 encoder = {}
 encoder['a'] = 0
 encoder['s'] = 1
 encoder['n'] = 2
 
-start_prob = np.array([0.33, 0.33, 0.34])
+start_prob = np.array([0.5, 0.5])
 
 emission_probs = np.array([
 	[0.64, 0.03, 0.33],
@@ -22,7 +23,7 @@ X_sent = []
 texts = []
 sents = []
 
-with open('data/hmm/obama_full_tweet_data.txt') as f:
+with open('data/hmm/control_tweet_data.txt') as f:
 	for line in f:
 		text, _, _, _, sent = line.split(' ::---:: ', 4)
 		sent = sent.strip('\n')
@@ -32,9 +33,9 @@ with open('data/hmm/obama_full_tweet_data.txt') as f:
 
 #pdb.set_trace()
 
-model = hmm.MultinomialHMM(n_components=3, params='t', init_params='t')
+model = hmm.MultinomialHMM(n_components=2, params='et', init_params='e')
 model.startprob_ = start_prob
-model.emissionprob_ = emission_probs
+#model.emissionprob_ = emission_probs
 model = model.fit(X_sent)
 np.set_printoptions(suppress=True)
 print("Start distribution: ")
@@ -46,11 +47,17 @@ print(model.emissionprob_)
 
 prediction = model.predict(X_sent)
 
-with open('data/hmm/obama_hmm_data.txt', 'w') as f:
+with open('data/hmm/control_hmm_data.txt', 'w') as f:
 	to_write = "Start distribution: \n" + str(model.startprob_) + "\n"
 	to_write += "Transition matrix: \n" + str(model.transmat_) + "\n"
 	to_write += "Emission matrix: \n" + str(model.emissionprob_) + "\n"
+	pdb.set_trace()
 	for i in range(len(sents)):
-		to_write += "clf: " + states[prediction[i]]
-		to_write += "hmm: " + states[sents[i]] + "\n"
+		status = "hidden: " + hidden_states[prediction[i]]
+		status += " observable: " + observable_states[sents[i]]
+		status += " text: " + texts[i] + "\n"
+		to_write += status
+
+#		if hidden_states[prediction[i]] != observable_states[sents[i]] and observable_states[sents[i]] != 'O':
+#			print(status)
 	f.write(to_write)

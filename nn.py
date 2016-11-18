@@ -1,32 +1,41 @@
 import pdb
 import sqlite3
+import operator
+import math
+import numpy as np
 
 import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_selection import SelectKBest,chi2
 
-from nn_models import beginner,CNN
+from text_processor import process_text
 
-def encoder(labels):
-	for i in range(len(labels)):
-		if labels[i] == 'a':
-			labels[i] = [1,0,0]
-		if labels[i] == 's':
-			labels[i] = [0,1,0]
-		if labels[i] == 'n':
-			labels[i] = [0,0,1]
-	return labels
+def word2vec(texts,features):
+	mat = []
+	for text in texts:
+		vec = []
+		text_set = set(text.split(' '))
+		for word in features:
+			if word in text_set:
+				vec.append(1)
+			else:
+				vec.append(0)
+		mat.append(vec)
+	return mat
 
-# Flags
-ETA = 0.1
+def sent2onehot(sent):
+	if sent == 'a':
+		return [1, 0, 0]
+	if sent == 's':
+		return [0, 1, 0]
+	if sent == 'n':
+		return [0, 0, 1]
+
 DATA_LOC = './tf_data'
-BATCH_SIZE = 50
-NUM_BATCHES = 500
+ETA = 0.001
 
-# Load data
+stop_words = set()
+
+#Load Data
 conn = sqlite3.connect('data/refined_training_data.db')
 c = conn.cursor()
 c.execute("SELECT * FROM training")
@@ -35,113 +44,76 @@ c.execute("SELECT * FROM test")
 te_d = c.fetchall()
 c.execute("SELECT * FROM validation")
 va_d = c.fetchall()
-conn.close()
-
-tr_a = [d for d in tr_d if d[2] == 'a']
-tr_s = [d for d in tr_d if d[2] == 's']
-tr_o = [d for d in tr_d if d[2] == 'n']
-
-#tr_d = np.concatenate((tr_a[:800],tr_s,tr_o[:800]),axis=0)
 
 tr_x = [d[0] for d in tr_d]
-tr_y_ = [d[2] for d in tr_d]
+tr_y_ = [sent2onehot(d[2]) for d in tr_d]
+te_x = [d[0] for d in te_d]
+te_y_ = [sent2onehot(d[2]) for d in te_d]
 va_x = [d[0] for d in va_d]
-va_y_ = [d[2] for d in va_d]
+va_y_ = [sent2onehot(d[2]) for d in va_d]
 
-# Build word vectorizer using scikit-learn
-cv = CountVectorizer(stop_words=['global', 'warming', 'globalwarming', 'climate', 'change', 'climatechange', 'http', 'https'])
-cv = cv.fit(tr_x)
-tr_dtmat = cv.transform(tr_x)
-sel = SelectKBest(chi2,k=100)
-sel.fit(tr_dtmat,tr_y_)
+ptr_x = [process_text(x, stop_words) for x in tr_x]
+pte_x = [process_text(x, stop_words) for x in te_x]
+pva_x = [process_text(x, stop_words) for x in va_x]
 
-# CREATE GRAPH
+vocab_size = 1000
+vocab = {}
 
-# Input nodes
-with tf.name_scope('Inputs'):
-	x = tf.placeholder(tf.float32, [None, 100], name='x_input')
-	y_ = tf.placeholder(tf.float32, [None, 3], name='y_input')
+for text in ptr_x:
+	tokens = text.split(' ')
+	for t in tokens:
+		vocab[t] = vocab.get(t, 0) + 1
+sorted_vocab = sorted(vocab.items(), key=operator.itemgetter(1), reverse=True)[:vocab_size]
+features = [v[0] for v in sorted_vocab]
 
-# Model nodes
-with tf.name_scope('CNN'):
-	net, var_dict = beginner(x)
-#	net, var_dict = CNN(x)
-	y = tf.identity(net)
-#y = tf.nn.softmax(net, name='predicted_y')
-#pdb.set_trace()
+tr_dtmat = word2vec(ptr_x, features)
+va_dtmat = word2vec(pva_x, features)
 
-# Loss nodes
+x = tf.placeholder(tf.float32, [None,1000], name='x-input')
+y_ = tf.placeholder(tf.float32, [None,3], name='y-input')
+
+with tf.name_scope('hidden1'):
+	sigma1 = 1.0 / math.sqrt(float(1000))
+	Wh = tf.Variable(tf.truncated_normal([1000,30],stddev=sigma1),name='weights')
+	bh = tf.Variable(tf.zeros([30]), name='biases')
+	hidden1 = tf.nn.relu(tf.matmul(x,Wh) + bh)
+with tf.name_scope('softmax'):
+	sigma2 = 1.0 / math.sqrt(30)
+	Ws = tf.Variable(tf.truncated_normal([30,3], stddev=sigma2), name='weights')
+	bs = tf.Variable(tf.zeros([3]), name='biases')
+	net = tf.matmul(hidden1,Ws) + bs
+	prob_dist = tf.nn.softmax(net, name='prob_dist')
+	prediction = tf.nn.top_k(prob_dist, 1)
+
 with tf.name_scope('Loss'):
-	cross_entropy = tf.nn.softmax_cross_entropy_with_logits(y, y_, name='cross_entropy')
-	loss = tf.reduce_mean(cross_entropy, name='xentropy_mean')
-	tf.scalar_summary(loss.op.name, loss)
+	c_e = tf.nn.softmax_cross_entropy_with_logits(net, y_, name='cross_entropy')
+	loss = tf.reduce_mean(c_e, name='xentropy_mean')
 
-# Training nodes
-# opt = optimizer
-# op = operation
 with tf.name_scope('Backprop'):
 	opt = tf.train.GradientDescentOptimizer(ETA)
 	grads = opt.compute_gradients(loss)
-	step = tf.Variable(0, name='train_step_num', trainable=False)
-	apply_gradient_op = opt.apply_gradients(grads, global_step=step)
-#	cnn_train_op = cnn_opt.minimize(loss, global_step=step)
+	apply_gradient_op = opt.apply_gradients(grads)
 
-for var in tf.trainable_variables():
-	tf.histogram_summary(var.op.name, var)
-
-for grad, var in grads:
-	if grad is not None:
-		tf.histogram_summary(var.op.name + '/gradients', grad)
-
-# Eval nodes
-_,y_prime = tf.nn.top_k(y_, 1)
-y_prime = tf.reshape(y_prime,[-1])
-correct = tf.nn.in_top_k(y, y_prime, 1)
-eval_op = tf.reduce_sum(tf.cast(correct, tf.int32))
-
-def do_eval(sess, eval_op):
-	num_eval = 10
-	data_set = (sel.transform(cv.transform(va_x[:10])).toarray(), encoder(va_y_[:10]))
-	result,true_count = sess.run((y,eval_op), feed_dict={
-		x: data_set[0].reshape((num_eval,100)),
-		y_: data_set[1],
-	})
-	print(result)
-	print(data_set[1])
-	pdb.set_trace()
-        precision = 100.0 * true_count / num_eval
-        print(' Num examples: %d Num correct: %d Precision: %0.04f' % (num_eval, true_count, precision))
-
-# SCRIPT START
-summary_op = tf.merge_all_summaries()
 
 sess = tf.Session()
-summary_writer = tf.train.SummaryWriter(DATA_LOC, sess.graph)
 sess.run(tf.initialize_all_variables())
 
+for i in range(0,5900, 10):
+	_, cur_loss = sess.run((apply_gradient_op, loss), feed_dict={
+		x: tr_dtmat[i:i+100],
+		y_: tr_y_[i:i+100]
+	})
+	print(cur_loss)
 
-saver = tf.train.Saver(var_dict)
-for i in range(NUM_BATCHES):
-#	np.random.shuffle(tr_d)
-	batch = tr_d[:BATCH_SIZE]
-	batch_x = [d[0] for d in batch]
-	batch_y = encoder([d[2] for d in batch])
-	batch_x = sel.transform(cv.transform(batch_x)).toarray()
-#	pdb.set_trace()
-	_,cur_loss, summary_str = sess.run((apply_gradient_op, loss, summary_op), feed_dict={
-		x: batch_x,
-		y_: batch_y
+	probs = sess.run((prob_dist), feed_dict={
+		x: va_dtmat,
+		y_: va_y_
 	})
 
-        summary_writer.add_summary(summary_str, i)
-        summary_writer.flush()
+	max_prob,preds = sess.run((prediction), feed_dict={
+		x: va_dtmat,
+		y_: va_y_
+	})
+#	print(test[100:110])
 
-#	test = sess.run(y, feed_dict={
-#		x: batch[0],
-#		y_: batch[1]
-#	})
-#	pdb.set_trace()
-	do_eval(sess, eval_op)
-	print('Training batch #{} of {}'.format(i,NUM_BATCHES) + " loss: " + str(cur_loss))
-#saver.save(sess, DATA_LOC + '/CNN.ckpt')
 pdb.set_trace()

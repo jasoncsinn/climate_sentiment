@@ -22,9 +22,14 @@ for line in lines:
 	nums.append(num)
 
 
-ax = plt.subplot(111)
-ax.plot_date(dates,nums,'-')
-ax.set_title('Total # of Tweets per day')
-ax.set_ylabel('# of Tweets')
-ax.set_xlabel('Date')
-plt.show()
+ax1 = plt.subplot(111)
+
+ax1.plot_date(dates,nums,'-')
+ax1.set_ylabel('Number of Tweets')
+ax1.set_xlabel('Date')
+
+
+plt.tight_layout()
+plt.setp(ax1.get_xticklabels(), fontsize=8)
+plt.savefig("analysis/total_tweets.eps", format="eps")
+#plt.show()
