@@ -114,6 +114,6 @@ for i in range(0,5900, 10):
 		x: va_dtmat,
 		y_: va_y_
 	})
-#	print(test[100:110])
+	#pdb.set_trace()
 
-pdb.set_trace()
+#pdb.set_trace()

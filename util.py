@@ -1,5 +1,6 @@
 import datetime
 from os import listdir
+import re
 
 def tweet_datetime(s):
 	return datetime.datetime.strptime(s, '%a %b %d %H:%M:%S +0000 %Y')
@@ -54,36 +55,52 @@ def parse_tweet(tweet_str):
 	location = components[3].split(',',1)[1].split(':',1)[1].strip().strip("\"").replace("\'","")
 	return (date, text, username, location)
 
-def merge_labelled_data(filename_X, filename_Y):
-	lines_X = load_lines_from_file(filename_X)
-	lines_Y = load_lines_from_file(filename_Y)
-	sep = ' ::---:: '
-	merged = [y + sep + x for x,y in zip(lines_X,lines_Y)]
-	return merged
+# helper for process_text
+def remove_links(tokens):
+        to_remove = []
+        for i in range(len(tokens)):
+                if "http" in tokens[i] or "https" in tokens[i]:
+                        to_remove.append(i)
+        for i in sorted(to_remove, reverse=True):
+                del tokens[i]
+        return tokens
 
-def split_labelled_data(filename, filename_X, filename_Y):
-	f = open(filename)
-	X = []
-	Y = []
-	for line in f:
-		linelist = line.split('::---::', 1)
-		Y.append(linelist[0].strip())
-		X.append(linelist[1].strip())
-	f.close()
-	f_X = open(filename_X, 'w')
-	f_X.write("\n".join(X))
-	f_X.close()
+# helper for process_text
+def remove_retweet(tokens):
+        if len(tokens) > 2 and tokens[0] == "rt":
+                del tokens[1]
+                del tokens[0]
+        return tokens
 
-	f_Y = open(filename_Y, 'w')
-	f_Y.write("\n".join(Y))
-	f_Y.close()
-	return (X,Y)
+# helper for process_text
+def replace_unicode(text):
+        text = text.replace('\\u2018', '\'')
+        text = text.replace('\\u2019', '\'')
+        text = text.replace('\\u2026', '...')
+        text = text.replace('\\u00a0', ' ')
+        text = text.replace('\\\"', '')
+        text = re.sub("\\\\u....", '', text)
+        return text
 
-def save_incorrect_tweets(filename, test_X, test_Y, prediction):
-	incorrect = []
-	for i in range(len(test_X)):
-		if prediction[i] != test_Y[i]:
-			incorrect.append(test_Y[i] + " ::---:: " + prediction[i] + "::---:: " + test_X[i])
-	f = open(filename, 'w')
-	f.write("\n".join(incorrect))
-	f.close()
+# stop_words should be a set
+def process_text(text, stop_words):
+        text = replace_unicode(text)
+        tokens = re.split(' |\n|,|\\\\n|=', text)
+        tokens = remove_links(tokens)
+        tokens = [t.lower() for t in tokens]
+        tokens = remove_retweet(tokens)
+        tokens = [t.strip(',.?\'":;[]{}-_()!~|') for t in tokens]
+        tokens = [t for t in tokens if not t in stop_words]
+        tokens = [t for t in tokens if t != '']
+        return ' '.join(tokens)
+
+# db_itr most likely cursor after execute
+def make_word_ht(db_itr):
+        word_ht = {}
+        for i,row in enumerate(db_itr):
+                text, date, username, location, sent = row
+                processed_text = process_text(text, set())
+                tokens = processed_text.split(' ')
+                for token in tokens:
+                        word_ht[token] = word_ht.get(token, 0) + 1
+        return word_ht

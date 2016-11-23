@@ -108,6 +108,7 @@ tf_data/
 data/*.txt
 
 data/switchers/
+data/word_counter
 data/hmm/
 
 data/tsr_dicaprio

@@ -4,17 +4,29 @@ import datetime
 
 from util import get_time_mask,tweet_datetime
 
+conn = sqlite3.connect('data/refined_predicted_data.db')
+c = conn.cursor()
+c.execute("SELECT * FROM full_sentiments")
+lines = c.fetchall()
+
+print("Loaded all sentiments")
+
 user_ht = {}
-with open('data/switcher_usernames.txt') as f:
+with open('data/switchers/switcher_usernames.txt') as f:
 	for un in f:
 		un = un.strip()
 		user_ht[un] = {}
 linenum = 1
+
+print("Loaded all users")
 #with open('data/full_sentiments.txt') as f:
 #with open('data/sentiments_dicaprio.txt') as f:
-with open('data/switchers/sentiments_bn_khaled.txt') as f:
-	for line in f:
-		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
+#with open('data/switchers/sentiments_bn_khaled.txt') as f:
+#	for line in f:
+for filler in range(1):
+	for line in lines:
+#		_, date_str, username, _, sentiment = line.split(" ::---:: ", 4)
+		_, date_str, username, _, sentiment = line
 #		pdb.set_trace()
 		if username in user_ht:
 			
@@ -27,7 +39,7 @@ with open('data/switchers/sentiments_bn_khaled.txt') as f:
 #pdb.set_trace()
 #with open ('data/switcher_data.txt', 'w') as f:
 #with open('data/switcher_dicaprio.txt', 'w') as f:
-with open('data/switchers/switcher_bn_khaled.txt', 'w') as f:
+with open('data/switchers/switcher_full.txt', 'w') as f:
 	for username in user_ht:
 		to_write = username
 		dt_s_ht = user_ht[username]

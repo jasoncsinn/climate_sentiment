@@ -4,7 +4,7 @@ import numpy as np
 
 import pdb
 
-f = open('data/switchers/switcher_earthday.txt')
+f = open('data/switchers/switcher_full.txt')
 lines = f.readlines()
 f.close()
 
@@ -72,7 +72,6 @@ rects2 = ax1.bar(X_axis+width, Y_act_5, width, color='lightskyblue')
 rects3 = ax1.bar(X_axis+width*2, Y_act_more, width, color='lightcoral')
 ax1.set_autoscale_on(False)
 ax1.axis([0,10,0,100])
-ax1.set_title('Activist switches')
 ax1.set_ylabel('% of population')
 ax1.set_xticks(X_axis + 1.5*width)
 ax1.set_xticklabels(X_axis)
@@ -90,7 +89,6 @@ rects2 = ax3.bar(X_axis+width, Y_ske_5, width, color='lightskyblue')
 rects3 = ax3.bar(X_axis+width*2, Y_ske_more, width, color='lightcoral')
 ax3.set_autoscale_on(False)
 ax3.axis([0,10,0,100])
-ax3.set_title('Skeptical switches')
 ax3.set_ylabel('% of population')
 ax3.set_xlabel('# of changes')
 ax3.set_xticks(X_axis + 1.5*width)
@@ -100,4 +98,5 @@ ax4 = fig.add_subplot(224)
 ax4.pie(dist_ske,labels=labels,colors=colors,shadow=True,autopct='%1.1f%%')
 ax4.axis('equal')
 
+plt.savefig("analysis/switchers_full.eps", format="eps")
 plt.show()

@@ -8,8 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import SelectKBest,chi2
 from sklearn.calibration import CalibratedClassifierCV
 
-from text_processor import process_text
-from util import get_time_mask,load_lines_from_file,can_parse,parse_tweet
+from util import get_time_mask,load_lines_from_file,can_parse,parse_tweet,process_text
 
 import pdb
 import sys
