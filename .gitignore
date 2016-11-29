@@ -100,6 +100,7 @@ old/
 # Ignore predicted data database (upload to another source)
 data/predicted_data.db
 data/refined_predicted_data.db
+data/merged_predicted_data.db
 
 # Ignore tensorflow data
 tf_data/

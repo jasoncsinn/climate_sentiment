@@ -3,6 +3,33 @@ import sqlite3
 
 from util import get_time_mask
 
+user_ht = {}
+with open('data/full_usernames.txt') as f:
+	usernames = f.readlines()
+	usernames = [un.strip('\n') for un in usernames]
+
+for un in usernames:
+	user_ht[un] = un + ":"
+
+table_names, dates = get_time_mask()
+conn = sqlite3.connect('data/predicted_data.db')
+c = conn.cursor()
+
+for table_name in table_names:
+	c.execute("SELECT * FROM " + table_name)
+	for row in c:
+		_,_,un,_,sent = row
+		if un in user_ht:
+			user_ht[un] = user_ht[un] + " " + sent
+		print(table_name + "username: " + un + " sent: " + sent)
+
+with open('data/hmm_data.txt', 'w') as f:
+	for un in user_ht:
+		f.write(user_ht[un] + '\n')
+
+pdb.set_trace()
+
+'''
 conn = sqlite3.connect('data/predicted_data.db')
 c = conn.cursor()
 
@@ -15,3 +42,4 @@ with open('data/hmm/obama_full_tweet_data.txt', 'w') as f:
 		if len(db_tweets) > 0:
 			f.write('\n'.join(db_tweets) + '\n')
 		print("Done querying " + t_n)
+'''

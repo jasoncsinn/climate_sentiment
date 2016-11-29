@@ -9,8 +9,8 @@ from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from util import get_time_mask,make_word_ht
 
 table_names,dates  = get_time_mask()
-MODE = "n"
-conn = sqlite3.connect('data/refined_predicted_data.db')
+MODE = "u"
+conn = sqlite3.connect('data/predicted_data.db')
 c = conn.cursor()
 
 stop_words = set(['climate','change','global','warming','climatechange','globalwarming'])

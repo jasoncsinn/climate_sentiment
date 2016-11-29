@@ -8,18 +8,18 @@ table_names, dates = get_time_mask()
 conn = sqlite3.connect('data/predicted_data.db')
 c = conn.cursor()
 
-start_dt = datetime.datetime(2015,4,20,0,0,0)
-end_dt = datetime.datetime(2016,6,1,0,0,0)
+start_dt = datetime.datetime(2016,4,22,0,0,0)
+end_dt = datetime.datetime(2016,4,30,0,0,0)
 
 #with open ('data/sentiments_dicaprio.txt', 'w') as f:
-with open ('data/hmm/control_tweet_data.txt', 'w') as f:
-	for t_n in table_names[3:4]:
+with open ('data/tsr_earthday/post_data.txt', 'w') as f:
+	for t_n in table_names[50:60]:
 #		tweets = c.execute("SELECT * FROM " + t_n + " WHERE not sentiment = 'n'")
 		c.execute("SELECT * FROM " + t_n)
 		tweets = c.fetchall()
 		print("Done querying table " + t_n)
 		to_write = []
-		tweets = tweets[:250]
+		tweets = tweets
 		for t in tweets:
 			dt = tweet_datetime(t[1])
 			if dt > start_dt and dt < end_dt:

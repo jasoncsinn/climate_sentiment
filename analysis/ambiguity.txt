@@ -1,0 +1,64 @@
+Generating pre and post distributions for event name: trump
+
+Prior to event
+----------
+Raw number of tweets: [37306, 16485, 36923, 270435]
+Total number of tweets: 361149
+Normalized distribution: [10.329808472403357, 4.564597991410747, 10.223758061077284, 74.88183547510862]
+----------
+
+After event
+----------
+Raw number of tweets: [31632, 166234, 163131, 466493]
+Total number of tweets: 827490
+Normalized distribution: [3.822644382409455, 20.088943673035324, 19.713954247181235, 56.374457697373984]
+----------
+
+Generating pre and post distributions for event name: cop21
+
+Prior to event
+----------
+Raw number of tweets: [72603, 34011, 72497, 726095]
+Total number of tweets: 905206
+Normalized distribution: [8.020605254494557, 3.7572663018141728, 8.00889521280239, 80.21323323088887]
+----------
+
+After event
+----------
+Raw number of tweets: [42960, 35979, 71088, 640646]
+Total number of tweets: 790673
+Normalized distribution: [5.433346022945011, 4.550427294216446, 8.990821742996156, 81.02540493984239]
+----------
+
+Generating pre and post distributions for event name: dicaprio
+
+Prior to event
+----------
+Raw number of tweets: [36570, 10251, 20791, 233691]
+Total number of tweets: 301303
+Normalized distribution: [12.137283730995044, 3.4022230113872083, 6.900362757755482, 77.56013049986227]
+----------
+
+After event
+----------
+Raw number of tweets: [69864, 24640, 47595, 515356]
+Total number of tweets: 657455
+Normalized distribution: [10.626430706284081, 3.7477850195070386, 7.239278733905743, 78.38650554030313]
+----------
+
+Generating pre and post distributions for event name: earthday
+
+Prior to event
+----------
+Raw number of tweets: [43232, 15035, 37591, 321488]
+Total number of tweets: 417346
+Normalized distribution: [10.358791027109401, 3.6025264408907716, 9.007154734920187, 77.03152779707965]
+----------
+
+After event
+----------
+Raw number of tweets: [44333, 14570, 45678, 265838]
+Total number of tweets: 370419
+Normalized distribution: [11.968338557147446, 3.933383546740313, 12.331440881812219, 71.76683701430002]
+----------
+

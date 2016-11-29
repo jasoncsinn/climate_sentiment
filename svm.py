@@ -32,7 +32,8 @@ RUN_VALIDATION_SET = True
 RUN_TEST_SET = True
 
 PREDICT = True
-LOC_PRED_DB = 'data/refined_predicted_data.db'
+FILTER_PREDICTIONS = False
+LOC_PRED_DB = 'data/predicted_data.db'
 table_names,_ = get_time_mask()
 PRED_BATCH_SIZE = 10000
 blacklist = []
@@ -300,15 +301,28 @@ if PREDICT:
 						prob_mask.append(False)
 
 				# Apply probability mask
-				m_dates = [i for i,j in zip(dates, prob_mask) if j == True]
-				m_texts = [i for i,j in zip(texts, prob_mask) if j == True]
-				m_usernames = [i for i,j in zip(usernames, prob_mask) if j == True]
-				m_locations = [i for i,j in zip(locations, prob_mask) if j == True]
-				m_sents = [i for i,j in zip(pred_predictions, prob_mask) if j == True]
+				if FILTER_PREDICTIONS:
+					m_dates = [i for i,j in zip(dates, prob_mask) if j == True]
+					m_texts = [i for i,j in zip(texts, prob_mask) if j == True]
+					m_usernames = [i for i,j in zip(usernames, prob_mask) if j == True]
+					m_locations = [i for i,j in zip(locations, prob_mask) if j == True]
+					m_sents = [i for i,j in zip(pred_predictions, prob_mask) if j == True]
+				else:
+					m_dates = dates
+					m_texts = texts
+					m_usernames = usernames
+					m_locations = locations
+					m_sents = []
+					for i in range(len(prob_mask)):
+						if prob_mask[i] == False:
+							m_sents.append('u')
+						else:
+							m_sents.append(pred_predictions[i])
 
 				# Insert into database
 				for i in range(len(m_dates)):
 					to_execute = "INSERT INTO " + table_name + " VALUES (\'"
+#					to_execute = "INSERT INTO full_tweets VALUES(\'"
 					to_execute += m_texts[i] + "\',\'"
 					to_execute += m_dates[i] + "\',\'"
 					to_execute += m_usernames[i] + "\',\'"
