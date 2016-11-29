@@ -290,8 +290,15 @@ if PREDICT:
 				pred_dtmat = sel.transform(pred_dtmat)
 				pred_predictions = clf.predict(pred_dtmat)
 
-				# Build probability mask
+				# Build probability mask and calculate entropy
 				pred_probs = clf.predict_proba(pred_dtmat)
+				entropies = []
+				for dist in pred_probs:
+					entropy = 0
+					for prob in dist:
+						entropy -= prob * np.log(prob)
+					entropies.append(entropy)
+
 				prob_mask = []
 				for i in range(len(pred_probs)):
 					prob = max(pred_probs[i])
@@ -327,7 +334,8 @@ if PREDICT:
 					to_execute += m_dates[i] + "\',\'"
 					to_execute += m_usernames[i] + "\',\'"
 					to_execute += m_locations[i] + "\',\'"
-					to_execute += m_sents[i] + "\')"
+					to_execute += m_sents[i] + "\',\'"
+					to_execute += str(entropies[i]) + "\')"
 					pred_c.execute(to_execute)
 				cur_line += PRED_BATCH_SIZE
 				tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)

@@ -7,7 +7,7 @@ c = conn.cursor()
 table_names, dates = get_time_mask()
 #print(len(table_names))
 for table_name in table_names:
-	to_execute = "CREATE TABLE " + table_name + " (text,date,username,location,sentiment)"
+	to_execute = "CREATE TABLE " + table_name + " (text,date,username,location,sentiment,entropy)"
 	print(to_execute)
 	c.execute(to_execute)
 conn.commit()
