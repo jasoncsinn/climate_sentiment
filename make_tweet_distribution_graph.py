@@ -57,5 +57,7 @@ ax.legend(handles=[legend_red, legend_green, legend_blue])
 ax.set_ylabel('Percent of tweets')
 ax.set_xlabel('Date')
 
-plt.savefig("analysis/tweet_distribution.eps", format="eps")
+plt.setp(ax.get_xticklabels(), fontsize=8)
+
+plt.savefig("analysis/tweet_distribution.png", format="png")
 plt.show()

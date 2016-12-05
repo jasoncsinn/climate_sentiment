@@ -1,0 +1,18 @@
+Activist distribution
+----------
+Pre Mean: 0.623878560839 Pre std: 0.124340655752
+Post Mean: 0.640922514106 Post std: 0.124699681128
+----------
+
+Denier distribution
+----------
+Pre Mean: 0.585578212601 Pre std: 0.138412819585
+Post Mean: 0.564723394977 Post std: 0.109325223892
+----------
+
+Neutral distribution
+----------
+Pre Mean: 0.687907759792 Pre std: 0.107921602573
+Post Mean: 0.613962013562 Post std: 0.112764722629
+----------
+

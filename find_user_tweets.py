@@ -18,12 +18,12 @@ c = conn.cursor()
 for table_name in table_names:
 	c.execute("SELECT * FROM " + table_name)
 	for row in c:
-		_,_,un,_,sent = row
+		_,_,un,_,sent,ent = row
 		if un in user_ht:
-			user_ht[un] = user_ht[un] + " " + sent
-		print(table_name + "username: " + un + " sent: " + sent)
+			user_ht[un] = user_ht[un] + " " + sent + " " + ent
+		print(table_name + " username: " + un + " sent: " + sent + " ent: " + ent)
 
-with open('data/hmm_data.txt', 'w') as f:
+with open('data/ent_data.txt', 'w') as f:
 	for un in user_ht:
 		f.write(user_ht[un] + '\n')
 
