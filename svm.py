@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest,chi2
 from sklearn.calibration import CalibratedClassifierCV
 
@@ -23,7 +24,8 @@ PRINT_PARAMETERS = True
 
 CLEAN_TEXT = True
 USE_REFINED_TRAINING = True
-NUM_FEATURES = 1000
+TF_IDF = True
+NUM_FEATURES = 740
 CONFIDENCE_THRESHOLD = 0.7
 USE_STOP_WORDS = False # Only works if CLEAN_TEXT = True
 REGULARIZATION = 'l2'
@@ -31,7 +33,7 @@ REGULARIZATION = 'l2'
 RUN_VALIDATION_SET = True
 RUN_TEST_SET = True
 
-PREDICT = True
+PREDICT = False
 FILTER_PREDICTIONS = False
 LOC_PRED_DB = 'data/predicted_data.db'
 table_names,_ = get_time_mask()
@@ -105,9 +107,12 @@ else:
 
 # Transform text to document-term matrix
 print("Creating document-term matrix\n---------")
-cv = CountVectorizer()
+cv = CountVectorizer(min_df=2)
 cv = cv.fit(ptr_x)
 tr_dtmat = cv.transform(ptr_x)
+if TF_IDF:
+	tfidf = TfidfTransformer()
+	tr_dtmat = tfidf.fit_transform(tr_dtmat)
 print("Done.\n")
 
 # Feature selection
@@ -115,6 +120,12 @@ print("Selecting features\n---------")
 sel = SelectKBest(chi2,k=NUM_FEATURES)
 tr_dtmat = sel.fit_transform(tr_dtmat,tr_y_)
 print("Done.\n")
+
+if TF_IDF:
+	print("Implementing tf-idf\n----------")
+	tfidf = TfidfTransformer(use_idf=False)
+	tr_dtmat = tfidf.fit_transform(tr_dtmat)
+	print("Done.\n")
 
 if PRINT_FEATURES:
 	feature_list = cv.get_feature_names()
@@ -136,6 +147,8 @@ if RUN_VALIDATION_SET:
 	print("Running validation set\n---------")
 	va_dtmat = cv.transform(pva_x)
 	va_dtmat = sel.transform(va_dtmat)
+	if TF_IDF:
+		va_dtmat = tfidf.transform(va_dtmat)
 	predicted = clf.predict(va_dtmat)
 
 	# Create probability mask
@@ -200,6 +213,8 @@ if RUN_TEST_SET:
 	print("Running test set\n---------")
 	te_dtmat = cv.transform(pte_x)
 	te_dtmat = sel.transform(te_dtmat)
+	if TF_IDF:
+		te_dtmat = tfidf.transform(te_dtmat)
 	predicted = clf.predict(te_dtmat)
 
 	# Create probability mask
