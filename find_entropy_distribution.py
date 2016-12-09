@@ -120,22 +120,22 @@ post_n_std = [np.power((x - post_n_mean), 2) for x in post_n_ents]
 post_n_std = np.power(sum(post_n_std) / len(post_n_std), 0.5)
 
 ax1 = plt.subplot(311)
-ax1.plot(entropies, pre_a_values, '--', color='gray')
+ax1.plot(entropies, pre_a_values, '-', color='gray')
 ax1.plot(entropies, post_a_values, '-', color='black')
-ax1.axvline(x=pre_a_mean, linestyle='--', color='red')
+ax1.axvline(x=pre_a_mean, linestyle=':', color='red')
 ax1.axvline(x=post_a_mean, linestyle='-', color='red')
 
 ax2 = plt.subplot(312)
-ax2.plot(entropies, pre_s_values, '--', color='gray')
+ax2.plot(entropies, pre_s_values, '-', color='gray')
 ax2.plot(entropies, post_s_values, '-', color='black')
-ax2.axvline(x=pre_s_mean, linestyle='--', color='red')
+ax2.axvline(x=pre_s_mean, linestyle=':', color='red')
 ax2.axvline(x=post_s_mean, linestyle='-', color='red')
 
 ax3 = plt.subplot(313)
-ax3.plot(entropies, pre_n_values, '--', color='gray')
-ax3.plot(entropies, post_n_values, '-', color='black')
-ax3.axvline(x=pre_n_mean, linestyle='--', color='red')
-ax3.axvline(x=post_n_mean, linestyle='-', color='red')
+pre_ent_line = ax3.plot(entropies, pre_n_values, '-', color='gray')
+post_ent_line = ax3.plot(entropies, post_n_values, '-', color='black')
+pre_mean_line = ax3.axvline(x=pre_n_mean, linestyle=':', color='red')
+post_mean_line = ax3.axvline(x=post_n_mean, linestyle='-', color='red')
 
 print('Activist distribution\n----------')
 print ('Pre Mean: ' + str(pre_a_mean) + ' Pre std: ' + str(pre_a_std))
@@ -164,7 +164,11 @@ ax2.set_ylabel('Percent of Deniers')
 ax3.set_ylabel('Percent of Neutrals')
 ax3.set_xlabel('Entropy')
 
+#pre_ent_line[0].set_dashes([3,2])
+#pre_mean_line.set_dashes([3,2])
+
 plt.tight_layout()
+ax1.legend((pre_ent_line[0],post_ent_line[0], pre_mean_line, post_mean_line), ('Before Distribution', 'After Distribution', 'Before Mean', 'After Mean'), prop={'size':6})
 
 plt.savefig('analysis/entropy_distributions/' + event + '.eps', format='eps')
 #plt.show()
