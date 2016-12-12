@@ -44,20 +44,21 @@ for line in ts_lines:
 acts = [100.0 * acts[i] / total_tweets[i] for i in range(len(dates))]
 skes = [100.0 * skes[i] / total_tweets[i] for i in range(len(dates))]
 
+
 acts = [acts[i] + skes[i] for i in range(len(dates))]
 
 ax = plt.subplot(111)
 ax.fill_between(dates, 0, skes, facecolor='lightcoral', linewidth=0)
 ax.fill_between(dates, skes, acts, facecolor='yellowgreen', linewidth=0)
 ax.fill_between(dates, acts, 100, facecolor='lightskyblue', linewidth=0)
-legend_red = mpatches.Patch(color='lightcoral', label='Skeptics')
+legend_red = mpatches.Patch(color='lightcoral', label='Deniers')
 legend_green = mpatches.Patch(color='yellowgreen', label='Activists')
-legend_blue = mpatches.Patch(color='lightskyblue', label='Other')
-ax.legend(handles=[legend_red, legend_green, legend_blue])
+legend_blue = mpatches.Patch(color='lightskyblue', label='Neutrals')
+ax.legend(handles=[legend_green, legend_red, legend_blue])
 ax.set_ylabel('Percent of tweets')
 ax.set_xlabel('Date')
 
 plt.setp(ax.get_xticklabels(), fontsize=8)
 
-plt.savefig("analysis/tweet_distribution.png", format="png")
+plt.savefig("analysis/tweet_distribution.eps", format="eps")
 plt.show()
