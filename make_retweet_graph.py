@@ -30,19 +30,19 @@ Y_act_rt = [y*100.0/sum(Y_act_rt) for y in Y_act_rt] # rescale
 Y_ske_rt = [ske_rt.get(key,0) for key in X_axis]
 Y_ske_rt = [y*100.0/sum(Y_ske_rt) for y in Y_ske_rt] # rescale
 
-#pdb.set_trace()
+pdb.set_trace()
 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 width = 0.4
 rects1 = ax1.bar(X_axis, Y_act_rt, width, color='yellowgreen', edgecolor="none")
-rects2 = ax1.bar(X_axis+width, Y_ske_rt, width, color='lightskyblue', edgecolor="none")
+rects2 = ax1.bar(X_axis+width, Y_ske_rt, width, color='lightcoral', edgecolor="none")
 ax1.set_autoscale_on(False)
 ax1.axis([2,50,0,45])
 #ax1.set_title('Retweet Distribution')
-ax1.set_ylabel('% of population')
-ax1.set_xlabel('# of retweets (including original)')
-ax1.legend((rects1[0],rects2[0]), ('Activists', 'Skeptics'))
+ax1.set_ylabel('Percent of population')
+ax1.set_xlabel('Number of tweets' )
+ax1.legend((rects1[0],rects2[0]), ('Activists', 'Deniers'))
 
 plt.savefig("analysis/retweet.eps", format="eps")
 plt.show()
