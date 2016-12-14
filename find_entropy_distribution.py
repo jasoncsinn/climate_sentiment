@@ -3,7 +3,7 @@ import pdb
 import numpy as np
 import sys
 
-event = 'dicaprio'
+event = 'trump'
 print('Event: ' + event + '\n----------\n')
 
 class Logger(object):
@@ -119,23 +119,35 @@ pre_n_std = np.power(sum(pre_n_std) / len(pre_n_std), 0.5)
 post_n_std = [np.power((x - post_n_mean), 2) for x in post_n_ents]
 post_n_std = np.power(sum(post_n_std) / len(post_n_std), 0.5)
 
-ax1 = plt.subplot(311)
+ax1 = plt.subplot2grid((9,1),(0,0), rowspan=3)
 ax1.plot(entropies, pre_a_values, '-', color='gray')
 ax1.plot(entropies, post_a_values, '-', color='black')
-ax1.axvline(x=pre_a_mean, linestyle=':', color='red')
+ax1.axvline(x=pre_a_mean, linestyle='--', color='red')
 ax1.axvline(x=post_a_mean, linestyle='-', color='red')
 
-ax2 = plt.subplot(312)
+ax2 = plt.subplot2grid((9,1),(3,0), rowspan=3)
 ax2.plot(entropies, pre_s_values, '-', color='gray')
 ax2.plot(entropies, post_s_values, '-', color='black')
-ax2.axvline(x=pre_s_mean, linestyle=':', color='red')
+ax2.axvline(x=pre_s_mean, linestyle='--', color='red')
 ax2.axvline(x=post_s_mean, linestyle='-', color='red')
 
-ax3 = plt.subplot(313)
-pre_ent_line = ax3.plot(entropies, pre_n_values, '-', color='gray')
-post_ent_line = ax3.plot(entropies, post_n_values, '-', color='black')
-pre_mean_line = ax3.axvline(x=pre_n_mean, linestyle=':', color='red')
-post_mean_line = ax3.axvline(x=post_n_mean, linestyle='-', color='red')
+if event == 'trump':
+	ax31 = plt.subplot2grid((9,1),(6,0))
+	ax32 = plt.subplot2grid((9,1),(7,0), rowspan=2)
+	pre_ent_line = ax31.plot(entropies, pre_n_values, '-', color='gray')
+	post_ent_line = ax31.plot(entropies, post_n_values, '-', color='black')
+	pre_mean_line = ax31.axvline(x=pre_n_mean, linestyle='--', color='red')
+	post_mean_line = ax31.axvline(x=post_n_mean, linestyle='-', color='red')
+	pre_ent_line = ax32.plot(entropies, pre_n_values, '-', color='gray')
+	post_ent_line = ax32.plot(entropies, post_n_values, '-', color='black')
+	pre_mean_line = ax32.axvline(x=pre_n_mean, linestyle='--', color='red')
+	post_mean_line = ax32.axvline(x=post_n_mean, linestyle='-', color='red')
+else:
+	ax3 = plt.subplot2grid((9,1),(6,0), rowspan=3)
+	pre_ent_line = ax3.plot(entropies, pre_n_values, '-', color='gray')
+	post_ent_line = ax3.plot(entropies, post_n_values, '-', color='black')
+	pre_mean_line = ax3.axvline(x=pre_n_mean, linestyle='--', color='red')
+	post_mean_line = ax3.axvline(x=post_n_mean, linestyle='-', color='red')
 
 print('Activist distribution\n----------')
 print ('Pre Mean: ' + str(pre_a_mean) + ' Pre std: ' + str(pre_a_std))
@@ -154,21 +166,54 @@ print('----------\n')
 
 ax1.set_autoscale_on(False)
 ax2.set_autoscale_on(False)
-ax3.set_autoscale_on(False)
-ax1.axis([0,0.8,0,50])
-ax2.axis([0,0.8,0,50])
-ax3.axis([0,0.8,0,50])
+ax1.axis([0,0.8,0,30])
+ax2.axis([0,0.8,0,30])
+
+if event == 'trump':
+	ax32.set_autoscale_on(False)
+	ax31.set_autoscale_on(False)
+	ax31.axis([0,0.8,40,50])
+	ax32.axis([0,0.8,0,20])
+else:
+	ax3.set_autoscale_on(False)
+	ax3.axis([0,0.8,0,30])
+
+ax1.tick_params(axis='x', labelbottom='off')
+ax2.tick_params(axis='x', labelbottom='off')
+if event == 'trump':
+	ax31.tick_params(axis='x', which='both', bottom='off', labelbottom='off')
+	ax32.tick_params(axis='x', which='both', top='off')
+	ax31.spines['bottom'].set_visible(False)
+	ax32.spines['top'].set_visible(False)
 
 ax1.set_ylabel('Percent of Activists')
 ax2.set_ylabel('Percent of Deniers')
-ax3.set_ylabel('Percent of Neutrals')
-ax3.set_xlabel('Entropy')
+if event == 'trump':
+	ax32.set_xlabel('Entropy')
+	ax32.text(-0.065, 31, 'Percent of Neutrals', rotation='vertical')
+	ticks = range(40,51,5)
+	ax31.set_yticks(ticks)
+	ax31.set_yticklabels(ticks)
+	ticks = range(0,21,5)
+	ax32.set_yticks(ticks)
+	ax32.set_yticklabels(ticks)
+else:
+	ax3.set_ylabel('Percent of Neutrals')
+	ax3.set_xlabel('Entropy')
 
-#pre_ent_line[0].set_dashes([3,2])
-#pre_mean_line.set_dashes([3,2])
+if event == 'trump':
+	d = .008  # how big to make the diagonal lines in axes coordinates
+	kwargs = dict(transform=ax31.transAxes, color='k', clip_on=False)
+	ax31.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
+	ax31.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
 
-plt.tight_layout()
-ax1.legend((pre_ent_line[0],post_ent_line[0], pre_mean_line, post_mean_line), ('Before Distribution', 'After Distribution', 'Before Mean', 'After Mean'), prop={'size':6})
+	kwargs.update(transform=ax32.transAxes)  # switch to the bottom axes
+	ax32.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
+	ax32.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
 
+#plt.tight_layout()
+ax1.legend((pre_ent_line[0],post_ent_line[0], pre_mean_line, post_mean_line), ('Before Distribution', 'After Distribution', 'Before Mean', 'After Mean'), prop={'size':10}, loc=2)
+
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.5)
 plt.savefig('analysis/entropy_distributions/' + event + '.eps', format='eps')
-#plt.show()
+plt.show()

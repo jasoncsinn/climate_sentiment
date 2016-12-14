@@ -35,6 +35,7 @@ RUN_TEST_SET = True
 
 PREDICT = False
 FILTER_PREDICTIONS = False
+CONTINUOUS = True
 LOC_PRED_DB = 'data/predicted_data.db'
 table_names,_ = get_time_mask()
 PRED_BATCH_SIZE = 10000
@@ -305,53 +306,67 @@ if PREDICT:
 				pred_dtmat = sel.transform(pred_dtmat)
 				pred_predictions = clf.predict(pred_dtmat)
 
-				# Build probability mask and calculate entropy
-				pred_probs = clf.predict_proba(pred_dtmat)
-				entropies = []
-				for dist in pred_probs:
-					entropy = 0
-					for prob in dist:
-						entropy -= prob * np.log(prob)
-					entropies.append(entropy)
+				if CONTINUOUS:
+					# Build probability mask and calculate entropy
+					pred_probs = clf.predict_proba(pred_dtmat)
+					entropies = []
+					for dist in pred_probs:
+						entropy = 0
+						for prob in dist:
+							entropy -= prob * np.log(prob)
+						entropies.append(entropy)
 
-				prob_mask = []
-				for i in range(len(pred_probs)):
-					prob = max(pred_probs[i])
-					if prob > CONFIDENCE_THRESHOLD:
-						prob_mask.append(True)
-					else:
-						prob_mask.append(False)
-
-				# Apply probability mask
-				if FILTER_PREDICTIONS:
-					m_dates = [i for i,j in zip(dates, prob_mask) if j == True]
-					m_texts = [i for i,j in zip(texts, prob_mask) if j == True]
-					m_usernames = [i for i,j in zip(usernames, prob_mask) if j == True]
-					m_locations = [i for i,j in zip(locations, prob_mask) if j == True]
-					m_sents = [i for i,j in zip(pred_predictions, prob_mask) if j == True]
-				else:
-					m_dates = dates
-					m_texts = texts
-					m_usernames = usernames
-					m_locations = locations
-					m_sents = []
-					for i in range(len(prob_mask)):
-						if prob_mask[i] == False:
-							m_sents.append('u')
+					prob_mask = []
+					for i in range(len(pred_probs)):
+						prob = max(pred_probs[i])
+						if prob > CONFIDENCE_THRESHOLD:
+							prob_mask.append(True)
 						else:
-							m_sents.append(pred_predictions[i])
+							prob_mask.append(False)
 
-				# Insert into database
-				for i in range(len(m_dates)):
-					to_execute = "INSERT INTO " + table_name + " VALUES (\'"
-#					to_execute = "INSERT INTO full_tweets VALUES(\'"
-					to_execute += m_texts[i] + "\',\'"
-					to_execute += m_dates[i] + "\',\'"
-					to_execute += m_usernames[i] + "\',\'"
-					to_execute += m_locations[i] + "\',\'"
-					to_execute += m_sents[i] + "\',\'"
-					to_execute += str(entropies[i]) + "\')"
-					pred_c.execute(to_execute)
-				cur_line += PRED_BATCH_SIZE
-				tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)
+					# Apply probability mask
+					if FILTER_PREDICTIONS:
+						m_dates = [i for i,j in zip(dates, prob_mask) if j == True]
+						m_texts = [i for i,j in zip(texts, prob_mask) if j == True]
+						m_usernames = [i for i,j in zip(usernames, prob_mask) if j == True]
+						m_locations = [i for i,j in zip(locations, prob_mask) if j == True]
+						m_sents = [i for i,j in zip(pred_predictions, prob_mask) if j == True]
+					else:
+						m_dates = dates
+						m_texts = texts
+						m_usernames = usernames
+						m_locations = locations
+						m_sents = []
+						for i in range(len(prob_mask)):
+							if prob_mask[i] == False:
+								m_sents.append('u')
+							else:
+								m_sents.append(pred_predictions[i])
+
+					# Insert into database
+					for i in range(len(m_dates)):
+						to_execute = "INSERT INTO " + table_name + " VALUES (\'"
+	#					to_execute = "INSERT INTO full_tweets VALUES(\'"
+						to_execute += m_texts[i] + "\',\'"
+						to_execute += m_dates[i] + "\',\'"
+						to_execute += m_usernames[i] + "\',\'"
+						to_execute += m_locations[i] + "\',\'"
+						to_execute += m_sents[i] + "\',\'"
+						to_execute += str(entropies[i]) + "\')"
+						pred_c.execute(to_execute)
+					cur_line += PRED_BATCH_SIZE
+					tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)
+				# DISCRETE MODE
+				else:
+					for i in range(len(dates)):
+						to_execute = "INSERT INTO " + table_name + " VALUES(\'"
+						to_execute += texts[i] + "\',\'"
+						to_execute += dates[i] + "\',\'"
+						to_execute += usernames[i] + "\',\'"
+						to_execute += locations[i] + "\',\'"
+						to_execute += pred_predictions[i] + "\')"
+						pred_c.execute(to_execute)
+					cur_line += PRED_BATCH_SIZE
+					tweets = load_lines_from_file(fn, PRED_BATCH_SIZE, cur_line)
+				# DISCRETE MODE
 	print("Done.")
