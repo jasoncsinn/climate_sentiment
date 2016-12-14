@@ -38,6 +38,7 @@ ax1.set_ylabel('Number of Tweets (Thousands)')
 plt.setp(ax1.get_xticklabels(), fontsize=8)
 plt.setp(ax1.get_yticklabels(), fontsize=8)
 
+plt.savefig("analysis/total_tweets.eps", format="eps")
 plt.show()
 
 #pdb.set_trace()
